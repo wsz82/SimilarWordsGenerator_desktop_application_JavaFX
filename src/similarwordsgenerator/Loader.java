@@ -1,9 +1,10 @@
 package similarwordsgenerator;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,19 +20,14 @@ class Loader {
         List<String> loadList = new ArrayList<>();
 
         try (
-                BufferedReader fileReader = new BufferedReader(new FileReader(path))
+                BufferedReader fr = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))
                 ){
 
-            while ( true ) {
+            String temp;
 
-                String line = fileReader.readLine();
-                loadList.add(line);
+            while ( (temp = fr.readLine()) != null ) {
 
-                if ( line == null ) {
-
-                    loadList.remove(loadList.remove(null));
-                    break;
-                }
+                loadList.add(temp);
             }
 
         } catch (FileNotFoundException e) {

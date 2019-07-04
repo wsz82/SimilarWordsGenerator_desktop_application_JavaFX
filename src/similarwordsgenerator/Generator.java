@@ -27,7 +27,7 @@ class Generator {
                         break;
                     }
 
-                    if (ch.equals(Character.toLowerCase(output.toString().toCharArray()[output.toString().length() - 1]))) {
+                    if (Character.toLowerCase(ch) == (Character.toLowerCase(output.toString().toCharArray()[output.toString().length() - 1]))) {
 
                         output.append(analyser.getCharsCount().get(ch).toArray()[r.nextInt(analyser.getCharsCount().get(ch).toArray().length)]);
                     }

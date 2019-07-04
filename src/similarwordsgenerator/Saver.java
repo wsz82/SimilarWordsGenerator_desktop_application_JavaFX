@@ -1,7 +1,12 @@
 package similarwordsgenerator;
 
-import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 class Saver {
@@ -12,13 +17,13 @@ class Saver {
     void save (Analyser analyser, String path) {
 
         try (
-                FileWriter fw = new FileWriter(path)
+                BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8))
                 ) {
 
             fw.write(analyser.getMinLength());
-            fw.write("\n");
+            fw.newLine();
             fw.write(analyser.getMaxLength());
-            fw.write("\n");
+            fw.newLine();
 
             for ( char ch : analyser.getFirstChars() ) {
 
@@ -27,7 +32,7 @@ class Saver {
 
             for ( char ch : analyser.getCharsCount().keySet() ) {
 
-                fw.write("\n");
+                fw.newLine();
                 fw.write(ch);
 
                 List<Character> tempChars = new ArrayList<>(analyser.getCharsCount().get(ch));

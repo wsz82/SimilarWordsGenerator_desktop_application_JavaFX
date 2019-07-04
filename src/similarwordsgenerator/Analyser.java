@@ -1,9 +1,7 @@
 package similarwordsgenerator;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 class Analyser {
@@ -13,10 +11,7 @@ class Analyser {
     private Set<Character> firstChars;
     private Map<Character, ArrayList<Character>> charsCount;
 
-    Analyser() {
-    }
-
-    void analyse (List<String> input) {
+    Analyser (List<String> input) {
 
         Set<Character> firstChars = new HashSet<>();                     //starting letter maybe should be optional
         Map<Character, ArrayList<Character>> charsCount = new HashMap<>();
@@ -26,8 +21,8 @@ class Analyser {
 
         for (String word : input) {
 
-            char[] tempWord = word.toLowerCase().toCharArray();             //lower case should be optional
-            firstChars.add(Character.toUpperCase(tempWord[0]));
+            char[] tempWord = word.toCharArray();             //lower case should be optional
+            firstChars.add(tempWord[0]);
 
             if (tempWord.length < minLength) {
 
@@ -59,25 +54,51 @@ class Analyser {
         this.maxLength = maxLength;
     }
 
-    void paramLoad (String path) {
+    Analyser (String path) {
 
         Set<Character> firstChars = new HashSet<>();
         Map<Character, ArrayList<Character>> charsCount = new HashMap<>();
 
         try (
-                BufferedReader br = new BufferedReader(new FileReader(path))
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8), 2)
                 ) {
-
-            this.minLength = br.read();
-            br.read();
-            this.maxLength = br.read();
-            br.read();
 
             int temp;
 
-            while ( (temp = br.read()) != 10 ) {    //carriage return
+            while (true) {
+                if ((temp = br.read()) == '\n' || temp == '\r' ) {
+                    continue;
+                } else {
+                    this.minLength = temp;
+                    if (this.minLength != 0) {
+                        break;
+                    }
+                }
+            }
+            while (true) {
+                if ((temp = br.read()) == '\n' || temp == '\r' ) {
+                    continue;
+                } else {
+                    this.maxLength = temp;
+                    if (this.maxLength != 0) {
+                        break;
+                    }
+                }
+            }
 
-                firstChars.add((char)temp);
+            outerloop: while (true) {
+                if ((temp = br.read()) == '\n' || temp == '\r' ) {
+                    continue;
+                } else {
+                    while (true) {
+
+                        if (temp == '\n' || temp == '\r' ) {
+                            break outerloop;
+                        }
+                        firstChars.add((char) temp);
+                        temp = br.read();
+                    }
+                }
             }
 
             this.firstChars = firstChars;
@@ -86,7 +107,7 @@ class Analyser {
 
                 int tempKey = br.read();
 
-                if (tempKey == 10) {
+                if (tempKey == '\n' || tempKey == '\r') {
                     continue;
                 } else if (tempKey == -1) break;
 
@@ -99,7 +120,7 @@ class Analyser {
 
                     int tempNextChar = br.read();
 
-                    if (tempNextChar == 10) {
+                    if (tempNextChar == '\n' || tempNextChar == '\r') {
                         continue outerloop;
                     } else if (tempNextChar == -1) break outerloop;
 
