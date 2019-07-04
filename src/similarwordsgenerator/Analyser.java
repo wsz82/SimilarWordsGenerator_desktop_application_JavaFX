@@ -6,33 +6,21 @@ import java.util.*;
 
 class Analyser {
 
-    private int minLength;
-    private int maxLength;
-    private Set<Character> firstChars;
+    private List<Integer> wordLengths;  //length is weight average
+    private List<Character> firstChars;  //starting letter maybe should be optional
     private Map<Character, ArrayList<Character>> charsCount;
 
     Analyser (List<String> input) {
 
-        Set<Character> firstChars = new HashSet<>();                     //starting letter maybe should be optional
+        List<Integer> wordLenghts = new ArrayList<>();
+        List<Character> firstChars = new ArrayList<>();
         Map<Character, ArrayList<Character>> charsCount = new HashMap<>();
-
-        int maxLength = input.get(0).length();
-        int minLength = input.get(0).length();
 
         for (String word : input) {
 
             char[] tempWord = word.toCharArray();             //lower case should be optional
+            wordLenghts.add(word.length());
             firstChars.add(tempWord[0]);
-
-            if (tempWord.length < minLength) {
-
-                minLength = tempWord.length;
-            }
-
-            if (tempWord.length > maxLength) {
-
-                maxLength = tempWord.length;
-            }
 
             for (int index = 0; index < tempWord.length - 1; index++) {
 
@@ -46,17 +34,17 @@ class Analyser {
                 }
             }
 
+            this.wordLengths = wordLenghts;
             this.charsCount = charsCount;
         }
 
         this.firstChars = firstChars;
-        this.minLength = minLength;
-        this.maxLength = maxLength;
     }
 
     Analyser (String path) {
 
-        Set<Character> firstChars = new HashSet<>();
+        List<Integer> wordLenghts = new ArrayList<>();
+        List<Character> firstChars = new ArrayList<>();
         Map<Character, ArrayList<Character>> charsCount = new HashMap<>();
 
         try (
@@ -65,23 +53,19 @@ class Analyser {
 
             int temp;
 
-            while (true) {
+            if (br.read() != '\ufeff') br.reset();
+
+            outerloop: while (true) {
                 if ((temp = br.read()) == '\n' || temp == '\r' ) {
                     continue;
                 } else {
-                    this.minLength = temp;
-                    if (this.minLength != 0) {
-                        break;
-                    }
-                }
-            }
-            while (true) {
-                if ((temp = br.read()) == '\n' || temp == '\r' ) {
-                    continue;
-                } else {
-                    this.maxLength = temp;
-                    if (this.maxLength != 0) {
-                        break;
+                    while (true) {
+
+                        if (temp == '\n' || temp == '\r' ) {
+                            break outerloop;
+                        }
+                        wordLenghts.add(temp);
+                        temp = br.read();
                     }
                 }
             }
@@ -143,7 +127,7 @@ class Analyser {
         }
     }
 
-    Set<Character> getFirstChars() {
+    List<Character> getFirstChars() {
         return firstChars;
     }
 
@@ -151,11 +135,7 @@ class Analyser {
         return charsCount;
     }
 
-    int getMaxLength() {
-        return maxLength;
-    }
-
-    int getMinLength() {
-        return minLength;
+    List<Integer> getWordLengths() {
+        return wordLengths;
     }
 }

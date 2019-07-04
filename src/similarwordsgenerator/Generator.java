@@ -15,7 +15,8 @@ class Generator {
 
             StringBuilder output = new StringBuilder();
             Random r = new Random();
-            int wordLength = r.nextInt((analyser.getMaxLength() - analyser.getMinLength()) + 1) + analyser.getMinLength();
+
+            int wordLength = analyser.getWordLengths().get(r.nextInt(analyser.getWordLengths().toArray().length));
 
             output.append(analyser.getFirstChars().toArray()[r.nextInt(analyser.getFirstChars().toArray().length)]);
 

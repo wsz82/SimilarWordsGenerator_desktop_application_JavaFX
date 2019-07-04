@@ -1,10 +1,7 @@
 package similarwordsgenerator;
 
 import java.io.*;
-import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,12 +17,14 @@ class Loader {
         List<String> loadList = new ArrayList<>();
 
         try (
-                BufferedReader fr = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))
                 ){
 
             String temp;
 
-            while ( (temp = fr.readLine()) != null ) {
+            if (br.read() != '\ufeff') br.reset();
+
+            while ( (temp = br.readLine()) != null ) {
 
                 loadList.add(temp);
             }
@@ -38,5 +37,9 @@ class Loader {
 
         return this.load = loadList;
 
+    }
+
+    public List<String> getLoad() {
+        return load;
     }
 }

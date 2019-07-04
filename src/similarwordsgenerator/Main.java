@@ -10,20 +10,18 @@ public class Main {
 //        String[] names = new String[]{"Józef", "Grażyna"};
 //        String[] names = new String[]{"Józef"};
 //        String[] names = new String[]{"ab", "babac", "cd"};
-//        Loader loader = new Loader();
+        Loader loader = new Loader();
+        loader.load("D:\\names.txt");
 //        List<String> names = loader.load("D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind.txt");
 
+        Analyser analyser = new Analyser(loader.getLoad());
 //        Analyser analyser = new Analyser(names);
-        Analyser analyser = new Analyser("D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind_param.txt");
-//        Analyser analyser = new Analyser("D:\\SWGnamesParam.txt");
-//
-//        Saver saver = new Saver();
-//        saver.save(analyser,"D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind_param.txt");
+
+//        Saver saver = new Saver(analyser,"D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind_param.txt");
 
         Generator generator = new Generator();
-        generator.writeToConsole(generator.generate(analyser, 10));
+        generator.writeToConsole(generator.generate(analyser, 5));
 
-//
 //        for ( String word : temp ) {
 //
 //            System.out.println(word);
