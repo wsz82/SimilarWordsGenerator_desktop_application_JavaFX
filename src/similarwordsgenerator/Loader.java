@@ -17,7 +17,7 @@ class Loader {
         List<String> loadList = new ArrayList<>();
 
         try (
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8), 2)
                 ){
 
             String temp;

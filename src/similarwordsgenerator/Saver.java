@@ -31,15 +31,8 @@ class Saver {
 
                 if ( sum > 0 ) {
 
-                    if ( analyser.getWordLengths().size() > 100 ) {             //I need range 1-100 only for probability, maybe should be moved to Analyser
-
-                        fw.write(i);
-                        fw.write((int)( sum * 100 / analyser.getWordLengths().size()));
-                    } else {
-
-                        fw.write(i);
-                        fw.write((int) sum);
-                    }
+                    fw.write(i);
+                    fw.write((int) sum);
                 }
             }
 
@@ -55,15 +48,8 @@ class Saver {
 
                 if ( sum > 0 ) {
 
-                    if ( analyser.getFirstChars().size() > 100 ) {             //I need range 1-100 only for probability, maybe should be moved to Analyser
-
-                        fw.write(ch);
-                        fw.write((int)( sum * 100 / analyser.getFirstChars().size()));
-                    } else {
-
-                        fw.write(ch);
-                        fw.write((int) sum);
-                    }
+                    fw.write(ch);
+                    fw.write((int) sum);
                 }
             }
 
@@ -83,15 +69,8 @@ class Saver {
 
                     if ( sum > 0 ) {
 
-                        if ( tempChars.size() > 100 ) {             //I need range 1-100 only for probability, maybe should be moved to Analyser
-
                         fw.write(uniChar);
-                        fw.write((int)( sum * 100 / tempChars.size()));
-                        } else {
-
-                            fw.write(uniChar);
-                            fw.write((int) sum);
-                        }
+                        fw.write((int) sum);
                     }
                 }
             }

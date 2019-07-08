@@ -11,21 +11,17 @@ public class Main {
 //        String[] names = new String[]{"Józef"};
 //        String[] names = new String[]{"ab", "babac", "cd"};
         Loader loader = new Loader();
-        loader.load("D:\\names.txt");
+        loader.load("D:\\curses.txt");
 //        List<String> names = loader.load("D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind.txt");
 
         Analyser analyser = new Analyser(loader.getLoad());
-//        Analyser analyser = new Analyser(names);
+//        Analyser analyser = new Analyser("D:\\names param.txt");
 
-//        Saver saver = new Saver(analyser,"D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind_param.txt");
+//        Saver saver = new Saver();
+//        saver.save(analyser,"D:\\names param.txt");
 
         Generator generator = new Generator();
-        generator.writeToConsole(generator.generate(analyser, 5));
-
-//        for ( String word : temp ) {
-//
-//            System.out.println(word);
-//        }
+        generator.writeToConsole(generator.generate(analyser, 50));
 
     }
 }

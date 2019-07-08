@@ -33,13 +33,80 @@ class Analyser {
                     charsCount.get(tempWord[index]).add(0, tempWord[index + 1]);
                 }
             }
-
-            this.wordLengths = wordLenghts;
-            this.charsCount = charsCount;
         }
 
-        this.firstChars = firstChars;
+        for (Character key : charsCount.keySet() ) {
+
+            ArrayList<Character> charsCountList = charsCount.get(key);
+
+            if (charsCountList.size() > 100) {
+
+                Set<Character> uniChars = new HashSet<>(charsCountList);
+                ArrayList<Character> tempList = new ArrayList<>();
+
+                for (Character ch : uniChars) {
+
+                    long sum = charsCountList.stream()
+                            .filter(g -> g == ch)
+                            .count();
+
+                    int count = (int) sum * 100 / charsCountList.size();   //I need range 1-100 only for probability
+
+                    for (int j = 0; j < count; j++) {
+
+                        tempList.add(ch);
+                    }
+                }
+                charsCount.get(key).clear();
+                charsCount.get(key).addAll(tempList);
+            }
+        }
+
+        this.charsCount = charsCount;
+
+        if (firstChars.size() > 100) {
+
+            Set<Character> uniFirstChars = new HashSet<>(firstChars);
+            List<Character> tempFirstChars = new ArrayList<>();
+
+            for (Character ch : uniFirstChars) {
+
+                long sum = firstChars.stream()
+                        .filter(g -> g.equals(ch))
+                        .count();
+
+                int count = (int) sum * 100 / firstChars.size();   //I need range 1-100 only for probability
+
+                for (int j = 0; j < count; j++) {
+
+                    tempFirstChars.add(ch);
+                }
+            }
+            this.firstChars = tempFirstChars;
+        } else this.firstChars = firstChars;
+
+        if (wordLenghts.size() > 100) {
+
+            Set<Integer> uniWordLenghts = new HashSet<>(wordLenghts);
+            List<Integer> tempWordLengths = new ArrayList<>();
+
+            for (Integer i : uniWordLenghts) {
+
+                long sum = wordLenghts.stream()
+                        .filter(g -> g.equals(i))
+                        .count();
+
+                int count = (int) sum * 100 / wordLenghts.size();   //I need range 1-100 only for probability
+
+                for (int j = 0; j < count; j++) {
+
+                    tempWordLengths.add(i);
+                }
+            }
+            this.wordLengths = tempWordLengths;
+        } else this.wordLengths = wordLenghts;
     }
+
 
     Analyser (String path) {
 
@@ -57,30 +124,44 @@ class Analyser {
 
             outerloop: while (true) {
                 if ((temp = br.read()) == '\n' || temp == '\r' ) {
-                    continue;
+                    break;
                 } else {
                     while (true) {
+                        int tempCount = br.read();
 
-                        if (temp == '\n' || temp == '\r' ) {
+                        if (tempCount == '\n' || tempCount == '\r' ) {
                             break outerloop;
                         }
-                        wordLenghts.add(temp);
-                        temp = br.read();
+
+                        for (int i = 0; i < tempCount; i++) {
+                            wordLenghts.add(temp);
+
+                        }
+                        continue outerloop;
                     }
                 }
             }
 
+            this.wordLengths = wordLenghts;
+
+            br.skip(1);
+
             outerloop: while (true) {
                 if ((temp = br.read()) == '\n' || temp == '\r' ) {
-                    continue;
+                    break;
                 } else {
                     while (true) {
+                        int tempCount = br.read();
 
-                        if (temp == '\n' || temp == '\r' ) {
+                        if (tempCount == '\n' || tempCount == '\r' ) {
                             break outerloop;
                         }
-                        firstChars.add((char) temp);
-                        temp = br.read();
+
+                        for (int i = 0; i < tempCount; i++) {
+                            firstChars.add((char)temp);
+
+                        }
+                        continue outerloop;
                     }
                 }
             }
@@ -126,6 +207,8 @@ class Analyser {
             e.printStackTrace();
         }
     }
+
+
 
     List<Character> getFirstChars() {
         return firstChars;
