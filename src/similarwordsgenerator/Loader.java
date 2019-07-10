@@ -39,7 +39,7 @@ class Loader {
 
     }
 
-    public List<String> getLoad() {
+    List<String> getLoad() {
         return load;
     }
 }

@@ -7,16 +7,29 @@ class Generator {
     Generator() {
     }
 
-    Set<String> generate(Analyser analyser, int numberOfWords) {
+    Set<String> generate(Analyser analyser, GeneratorParameters genParam) {
 
-        Set<String> result = new TreeSet<>();
+        Set<String> result;
 
-        while ( result.size() < numberOfWords ) {
+        if (genParam.isSorted()) {
+
+            result = new TreeSet<>();
+
+        } else result = new HashSet<>();
+
+        while ( result.size() < genParam.getNumberOfWords() ) {
 
             StringBuilder output = new StringBuilder();
             Random r = new Random();
 
-            int wordLength = analyser.getWordLengths().get(r.nextInt(analyser.getWordLengths().toArray().length));
+            int wordLength;
+            int maxWordLength = genParam.getMaxWordLength();
+            int minWordLength = genParam.getMinWordLength();
+
+            if ( minWordLength != 0 && maxWordLength != 0 ) {
+
+                wordLength = r.nextInt((maxWordLength - minWordLength) + 1) + minWordLength;
+            } else wordLength = analyser.getWordLengths().get(r.nextInt(analyser.getWordLengths().toArray().length));
 
             output.append(analyser.getFirstChars().toArray()[r.nextInt(analyser.getFirstChars().toArray().length)]);
 
@@ -35,7 +48,17 @@ class Generator {
                 }
             }
 
-            result.add(output.toString());
+            String tempWord = output.toString();
+
+            if (tempWord.length() < minWordLength && minWordLength != 0) {
+
+                continue;
+
+            } else if (tempWord.length() > maxWordLength && maxWordLength != 0) {
+
+                result.add(tempWord.substring(0, maxWordLength - 1));
+
+            } else result.add(tempWord);
         }
 
         return result;

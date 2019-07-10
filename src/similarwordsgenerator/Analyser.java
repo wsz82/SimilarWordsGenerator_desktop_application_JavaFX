@@ -173,7 +173,6 @@ class Analyser {
 
                 for (Character ch : tempStream) {
 
-
                     long sum = tempStream.stream()
                             .filter(g -> g.equals(ch))
                             .count();
@@ -218,7 +217,6 @@ class Analyser {
                 tempStream.removeAll(tempWordLengths);
 
                 for (Integer i : tempStream) {
-
 
                     long sum = tempStream.stream()
                             .filter(g -> g.equals(i))
