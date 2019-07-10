@@ -15,6 +15,7 @@ public class Main {
 //        List<String> names = loader.load("D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind.txt");
 
         Analyser analyser = new Analyser(loader.getLoad());
+        analyser.compress(10000);
 //        Analyser analyser = new Analyser("D:\\names param.txt");
 
 //        Saver saver = new Saver();
