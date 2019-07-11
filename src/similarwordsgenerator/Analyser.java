@@ -7,20 +7,27 @@ import java.util.*;
 class Analyser {
 
     private List<Integer> wordLengths;  //length is weight average
-    private List<Character> firstChars;  //starting letter maybe should be optional
+    private List<Character> firstChars;
+    private List<Character> lastChars;  //starting letter maybe should be optional
     private Map<Character, ArrayList<Character>> charsCount;
+
+    Analyser () {
+    }
 
     Analyser (List<String> input) {
 
-        List<Integer> wordLenghts = new ArrayList<>();
+        List<Integer> wordLengths = new ArrayList<>();
         List<Character> firstChars = new ArrayList<>();
+        List<Character> lastChars = new ArrayList<>();
         Map<Character, ArrayList<Character>> charsCount = new HashMap<>();
 
         for (String word : input) {
 
             char[] tempWord = word.toCharArray();             //lower case should be optional
-            wordLenghts.add(word.length());
+
+            wordLengths.add(word.length());
             firstChars.add(tempWord[0]);
+            lastChars.add(tempWord[tempWord.length - 1]);
 
             for (int index = 0; index < tempWord.length - 1; index++) {
 
@@ -34,110 +41,10 @@ class Analyser {
                 }
             }
         }
+        this.wordLengths = wordLengths;
         this.firstChars = firstChars;
-        this.wordLengths = wordLenghts;
+        this.lastChars = lastChars;
         this.charsCount = charsCount;
-    }
-
-
-    Analyser (String path) {
-
-        List<Integer> wordLenghts = new ArrayList<>();
-        List<Character> firstChars = new ArrayList<>();
-        Map<Character, ArrayList<Character>> charsCount = new HashMap<>();
-
-        try (
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8), 2)
-                ) {
-
-            int temp;
-
-            if (br.read() != '\ufeff') br.reset();
-
-            outerloop: while (true) {
-                if ((temp = br.read()) == '\n' || temp == '\r' ) {
-                    break;
-                } else {
-                    while (true) {
-                        int tempCount = br.read();
-
-                        if (tempCount == '\n' || tempCount == '\r' ) {
-                            break outerloop;
-                        }
-
-                        for (int i = 0; i < tempCount; i++) {
-                            wordLenghts.add(temp);
-
-                        }
-                        continue outerloop;
-                    }
-                }
-            }
-
-            this.wordLengths = wordLenghts;
-
-            br.skip(1);
-
-            outerloop: while (true) {
-                if ((temp = br.read()) == '\n' || temp == '\r' ) {
-                    break;
-                } else {
-                    while (true) {
-                        int tempCount = br.read();
-
-                        if (tempCount == '\n' || tempCount == '\r' ) {
-                            break outerloop;
-                        }
-
-                        for (int i = 0; i < tempCount; i++) {
-                            firstChars.add((char)temp);
-
-                        }
-                        continue outerloop;
-                    }
-                }
-            }
-
-            this.firstChars = firstChars;
-
-            outerloop: while (true) {
-
-                int tempKey = br.read();
-
-                if (tempKey == '\n' || tempKey == '\r') {
-                    continue;
-                } else if (tempKey == -1) break;
-
-                if (!charsCount.containsKey((char)tempKey)) {
-
-                    charsCount.put((char)tempKey, new ArrayList<>());
-                }
-
-                while (true) {
-
-                    int tempNextChar = br.read();
-
-                    if (tempNextChar == '\n' || tempNextChar == '\r') {
-                        continue outerloop;
-                    } else if (tempNextChar == -1) break outerloop;
-
-                    int tempCount = br.read();
-
-                    for (int index = 0; index < tempCount; index++) {
-
-                        charsCount.get((char) tempKey).add((char) tempNextChar);
-                    }
-                }
-
-            }
-
-            this.charsCount = charsCount;
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     void compress (int compressionLevel) {
@@ -292,15 +199,35 @@ class Analyser {
         this.charsCount = charsCount;
     }
 
+    List<Integer> getWordLengths() {
+        return wordLengths;
+    }
+
+    void setWordLengths(List<Integer> wordLengths) {
+        this.wordLengths = wordLengths;
+    }
+
     List<Character> getFirstChars() {
         return firstChars;
+    }
+
+    void setFirstChars(List<Character> firstChars) {
+        this.firstChars = firstChars;
+    }
+
+    List<Character> getLastChars() {
+        return lastChars;
+    }
+
+    void setLastChars(List<Character> lastChars) {
+        this.lastChars = lastChars;
     }
 
     Map<Character, ArrayList<Character>> getCharsCount() {
         return charsCount;
     }
 
-    List<Integer> getWordLengths() {
-        return wordLengths;
+    void setCharsCount(Map<Character, ArrayList<Character>> charsCount) {
+        this.charsCount = charsCount;
     }
 }

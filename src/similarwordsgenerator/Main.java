@@ -8,19 +8,24 @@ public class Main {
 //        String[] names = new String[]{"Józef", "Grażyna"};
 //        String[] names = new String[]{"Józef"};
 //        String[] names = new String[]{"ab", "babac", "cd"};
-        Loader loader = new Loader();
-        loader.load("D:\\curses.txt");
-//        List<String> names = loader.load("D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind.txt");
+        WordsLoader wordsLoader = new WordsLoader();
+        wordsLoader.load("D:\\curses.txt");
+//        List<String> names = wordsLoader.load("D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind.txt");
 
-        Analyser analyser = new Analyser(loader.getLoad());
+        Analyser analyser = new Analyser(wordsLoader.getLoad());
+
+//        RatioLoader rl = new RatioLoader();
+//        Analyser analyser = rl.loadRatio("D:\\cursesParam.txt");
+
 //        analyser.compress(100);
-//        Analyser analyser = new Analyser("D:\\names param.txt");
 
-//        Saver saver = new Saver();
-//        saver.save(analyser,"D:\\names param.txt");
+//        RatioSaver rs = new RatioSaver();
+//        rs.save(analyser,"D:\\namesParam.txt");
 
         GeneratorParameters gp = new GeneratorParameters();
-        gp.setSorted(true);
+        gp.setSorted(false);
+        gp.setFirstCharAsInInput(true);
+        gp.setLastCharAsInInput(true);
         gp.setNumberOfWords(50);
         gp.setMinWordLength(0);
         gp.setMaxWordLength(0);

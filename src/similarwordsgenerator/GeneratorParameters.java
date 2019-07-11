@@ -3,6 +3,8 @@ package similarwordsgenerator;
 class GeneratorParameters {
 
     private boolean sorted = true;
+    private boolean firstCharAsInInput = true;
+    private boolean lastCharAsInInput = true;
     private int numberOfWords;
     private int minWordLength;
     private int maxWordLength;
@@ -16,6 +18,22 @@ class GeneratorParameters {
 
     void setSorted(boolean sorted) {
         this.sorted = sorted;
+    }
+
+    boolean isFirstCharAsInInput() {
+        return firstCharAsInInput;
+    }
+
+    void setFirstCharAsInInput(boolean firstCharAsInInput) {
+        this.firstCharAsInInput = firstCharAsInInput;
+    }
+
+    boolean isLastCharAsInInput() {
+        return lastCharAsInInput;
+    }
+
+    void setLastCharAsInInput(boolean lastCharAsInInput) {
+        this.lastCharAsInInput = lastCharAsInInput;
     }
 
     int getNumberOfWords() {

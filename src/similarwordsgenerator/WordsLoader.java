@@ -5,11 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-class Loader {
+class WordsLoader {
 
     private List<String> load;
 
-    Loader () {
+    WordsLoader() {
     }
 
     List<String> load (String path) {
@@ -17,7 +17,7 @@ class Loader {
         List<String> loadList = new ArrayList<>();
 
         try (
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8), 2)
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))
                 ){
 
             String temp;

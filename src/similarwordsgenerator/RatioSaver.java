@@ -10,9 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class Saver {
+class RatioSaver {
 
-    Saver () {
+    RatioSaver() {
     }
 
     void save (Analyser analyser, String path) {
@@ -43,6 +43,23 @@ class Saver {
             for ( char ch : uniFirstChars ) {
 
                 long sum = analyser.getFirstChars().stream()
+                        .filter(g -> g.equals(ch))
+                        .count();
+
+                if ( sum > 0 ) {
+
+                    fw.write(ch);
+                    fw.write((int) sum);
+                }
+            }
+
+            fw.newLine();
+
+            Set<Character> uniLastChars = new HashSet<>(analyser.getLastChars());
+
+            for ( char ch : uniLastChars ) {
+
+                long sum = analyser.getLastChars().stream()
                         .filter(g -> g.equals(ch))
                         .count();
 
