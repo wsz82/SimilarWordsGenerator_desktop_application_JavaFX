@@ -8,19 +8,25 @@ public class Main {
 //        String[] names = new String[]{"Józef", "Grażyna"};
 //        String[] names = new String[]{"Józef"};
 //        String[] names = new String[]{"ab", "babac", "cd"};
-        WordsLoader wordsLoader = new WordsLoader();
-        wordsLoader.load("D:\\curses.txt");
+//        WordsLoader wordsLoader = new WordsLoader();
+//        wordsLoader.load("D:\\curses.txt");
 //        List<String> names = wordsLoader.load("D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind.txt");
 
-        Analyser analyser = new Analyser(wordsLoader.getLoad());
+//        Analyser analyser = new Analyser(wordsLoader.getLoad());
 
-//        RatioLoader rl = new RatioLoader();
-//        Analyser analyser = rl.loadRatio("D:\\cursesParam.txt");
+//        TXTratioLoader rl = new TXTratioLoader();
+//        Analyser analyser = rl.load("D:\\cursesParam.txt");
 
 //        analyser.compress(100);
 
-//        RatioSaver rs = new RatioSaver();
+//        TXTratioSaver rs = new TXTratioSaver();
 //        rs.save(analyser,"D:\\namesParam.txt");
+
+//        ISaver is = new ANALYSERsaver();
+//        is.save(analyser, "D:\\ANcurses.bin");
+
+        ILoader  il = new ANALYSERloader();
+        Analyser analyser = il.load("D:\\ANcurses.bin");
 
         GeneratorParameters gp = new GeneratorParameters();
         gp.setSorted(false);

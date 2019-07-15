@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-class Analyser {
+class Analyser implements Serializable{
 
     private List<Integer> wordLengths;  //length is weight average
     private List<Character> firstChars;

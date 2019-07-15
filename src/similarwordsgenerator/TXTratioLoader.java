@@ -4,12 +4,13 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-class RatioLoader {
+class TXTratioLoader implements ILoader {
 
-    RatioLoader() {
+    TXTratioLoader() {
     }
 
-    Analyser loadRatio(String path) {
+    @Override
+    public Analyser load(String path) {
 
         Analyser analyser = new Analyser();
 

@@ -10,12 +10,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class RatioSaver {
+class TXTratioSaver implements ISaver {
 
-    RatioSaver() {
+    TXTratioSaver() {
     }
 
-    void save (Analyser analyser, String path) {
+    @Override
+    public void save (Analyser analyser, String path) {
 
         try (
                 BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8))
