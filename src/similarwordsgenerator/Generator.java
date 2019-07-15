@@ -88,9 +88,6 @@ class Generator {
 
     void writeToConsole(Set<String> result) { //to another class
 
-        for ( String word : result ) {
-
-            System.out.println(word);
-        }
+        result.forEach(System.out::println);
     }
 }

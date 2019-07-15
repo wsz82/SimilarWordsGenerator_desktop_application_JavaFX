@@ -25,7 +25,7 @@ public class Main {
         GeneratorParameters gp = new GeneratorParameters();
         gp.setSorted(false);
         gp.setFirstCharAsInInput(true);
-        gp.setLastCharAsInInput(true);
+        gp.setLastCharAsInInput(false);
         gp.setNumberOfWords(50);
         gp.setMinWordLength(0);
         gp.setMaxWordLength(0);

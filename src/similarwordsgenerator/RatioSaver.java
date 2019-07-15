@@ -21,9 +21,9 @@ class RatioSaver {
                 BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8))
                 ) {
 
-            Set<Integer> uniWordLenghts = new HashSet<>(analyser.getWordLengths());
+            Set<Integer> uniWordLengths = new HashSet<>(analyser.getWordLengths());
 
-            for ( Integer i : uniWordLenghts ) {
+            for ( Integer i : uniWordLengths ) {
 
                 long sum = analyser.getWordLengths().stream()
                         .filter(g -> g.equals(i))
