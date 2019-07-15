@@ -1,14 +1,13 @@
 package similarwordsgenerator;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.Serializable;
 import java.util.*;
 
 class Analyser implements Serializable{
 
-    private List<Integer> wordLengths;  //length is weight average
+    private List<Integer> wordLengths;  //random length is weight average distribution
     private List<Character> firstChars;
-    private List<Character> lastChars;  //starting letter maybe should be optional
+    private List<Character> lastChars;
     private Map<Character, ArrayList<Character>> charsCount;
 
     Analyser () {

@@ -1,13 +1,26 @@
 package similarwordsgenerator;
 
+import java.io.IOException;
 import java.util.*;
 
-class Generator {
+public class Generator {
 
-    Generator() {
+    private Analyser analyser;
+    private GeneratorParameters gp;
+
+    public Generator (String path, GeneratorParameters gp) throws IOException {
+        fileFormat(path);
+        this.gp = gp;
     }
 
-    Set<String> generate(Analyser analyser, GeneratorParameters gp) {
+    public Generator (String path, boolean sorted, boolean firstCharAsInInput, boolean lastCharAsInInput, int numberOfWords, int minWordLength, int maxWordLength) throws IOException {
+
+        fileFormat(path);
+
+        this.gp = new GeneratorParameters(sorted, firstCharAsInInput, lastCharAsInInput, numberOfWords, minWordLength, maxWordLength);
+    }
+
+    Set<String> generate() {
 
         Set<String> result;
 
@@ -84,6 +97,20 @@ class Generator {
         }
 
         return result;
+    }
+
+    private void fileFormat(String path) throws IOException {
+        try {
+            if (path.endsWith(".txt")) {
+                this.analyser = new WordsLoader().load(path);
+            } else if (path.endsWith(".bin")) {
+                this.analyser = new LoaderBIN().load(path);
+            } else if (path.endsWith(".swg")) {                         //new file format .swg
+                this.analyser = new LoaderSWG().load(path);
+            } else throw new IOException();
+        } catch (IOException e) {
+            throw new IOException("Wrong file format.");
+        }
     }
 
     void writeToConsole(Set<String> result) { //to another class

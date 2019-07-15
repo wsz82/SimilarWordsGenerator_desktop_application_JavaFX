@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-public class ANALYSERloader implements ILoader {
+public class LoaderBIN implements ILoader {
 
     @Override
     public Analyser load(String path) {

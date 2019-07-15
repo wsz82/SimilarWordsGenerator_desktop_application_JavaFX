@@ -5,17 +5,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-public class ANALYSERsaver implements ISaver {
-
-    ANALYSERsaver() {
-    }
+public class SaverBIN implements ISaver {
 
     @Override
     public void save(Analyser analyser, String path) {
 
         try (
 
-                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path))
+                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path + ".bin"))
 
                 ) {
 

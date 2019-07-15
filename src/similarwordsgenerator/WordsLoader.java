@@ -5,14 +5,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-class WordsLoader {
+public class WordsLoader implements ILoader{
 
-    private List<String> load;
-
-    WordsLoader() {
-    }
-
-    List<String> load (String path) {
+    @Override
+    public Analyser load (String path) {
 
         List<String> loadList = new ArrayList<>();
 
@@ -35,11 +31,7 @@ class WordsLoader {
             e.printStackTrace();
         }
 
-        return this.load = loadList;
+        return new Analyser(loadList);
 
-    }
-
-    List<String> getLoad() {
-        return load;
     }
 }

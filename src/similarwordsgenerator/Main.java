@@ -1,43 +1,32 @@
 package similarwordsgenerator;
 
+import java.io.IOException;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-//        String[] names = new String[]{"Stefan", "Renata", "Zbyszek", "Wojtek", "Antek"};
-//        String[] names = new String[]{"Józef", "Grażyna"};
-//        String[] names = new String[]{"Józef"};
-//        String[] names = new String[]{"ab", "babac", "cd"};
-//        WordsLoader wordsLoader = new WordsLoader();
-//        wordsLoader.load("D:\\curses.txt");
+        ILoader ws = new WordsLoader();
 //        List<String> names = wordsLoader.load("D:\\TR\\Nazwy\\Dwemerowe ruiny Morrowind.txt");
 
-//        Analyser analyser = new Analyser(wordsLoader.getLoad());
-
-//        TXTratioLoader rl = new TXTratioLoader();
-//        Analyser analyser = rl.load("D:\\cursesParam.txt");
+//        Analyser analyser = ws.load("D:\\curses.txt");
 
 //        analyser.compress(100);
 
-//        TXTratioSaver rs = new TXTratioSaver();
-//        rs.save(analyser,"D:\\namesParam.txt");
+//        ISaver rs = new SaverSWG();
+//        rs.save(analyser,"D:\\SWGcurses");        //broken
 
-//        ISaver is = new ANALYSERsaver();
+//        ILoader il = new LoaderSWG();
+//        il.load("D:\\SWGcurses.swg");             //broken
+
+//        ISaver is = new SaverBIN();
 //        is.save(analyser, "D:\\ANcurses.bin");
 
-        ILoader  il = new ANALYSERloader();
-        Analyser analyser = il.load("D:\\ANcurses.bin");
+//        ILoader  il = new LoaderBIN();
+//        Analyser analyser = il.load("D:\\ANcurses.bin");
 
-        GeneratorParameters gp = new GeneratorParameters();
-        gp.setSorted(false);
-        gp.setFirstCharAsInInput(true);
-        gp.setLastCharAsInInput(false);
-        gp.setNumberOfWords(50);
-        gp.setMinWordLength(0);
-        gp.setMaxWordLength(0);
-
-        Generator generator = new Generator();
-        generator.writeToConsole(generator.generate(analyser, gp));
+        Generator generator = new Generator("D:\\curses.txt", false, true, false, 50, 0, 0);
+        generator.writeToConsole(generator.generate());
 
     }
 }

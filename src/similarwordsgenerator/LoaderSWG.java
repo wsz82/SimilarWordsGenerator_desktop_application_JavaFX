@@ -4,10 +4,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-class TXTratioLoader implements ILoader {
-
-    TXTratioLoader() {
-    }
+class LoaderSWG implements ILoader {
 
     @Override
     public Analyser load(String path) {

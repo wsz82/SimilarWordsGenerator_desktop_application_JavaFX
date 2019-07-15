@@ -12,6 +12,15 @@ class GeneratorParameters {
     GeneratorParameters() {
     }
 
+    GeneratorParameters(boolean sorted, boolean firstCharAsInInput, boolean lastCharAsInInput, int numberOfWords, int minWordLength, int maxWordLength) {
+        this.sorted = sorted;
+        this.firstCharAsInInput = firstCharAsInInput;
+        this.lastCharAsInInput = lastCharAsInInput;
+        this.numberOfWords = numberOfWords;
+        this.minWordLength = minWordLength;
+        this.maxWordLength = maxWordLength;
+    }
+
     boolean isSorted() {
         return sorted;
     }

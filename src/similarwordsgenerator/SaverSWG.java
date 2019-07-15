@@ -10,16 +10,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class TXTratioSaver implements ISaver {
-
-    TXTratioSaver() {
-    }
+class SaverSWG implements ISaver {
 
     @Override
     public void save (Analyser analyser, String path) {
 
         try (
-                BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), StandardCharsets.UTF_8))
+                BufferedWriter fw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path + ".swg"), StandardCharsets.UTF_8))
                 ) {
 
             Set<Integer> uniWordLengths = new HashSet<>(analyser.getWordLengths());
