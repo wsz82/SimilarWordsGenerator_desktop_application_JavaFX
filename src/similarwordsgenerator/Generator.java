@@ -8,6 +8,9 @@ public class Generator {
     private Analyser analyser;
     private GeneratorParameters gp;
 
+    public Generator () {
+    }
+
     public Generator (String path, GeneratorParameters gp) throws IOException {
         fileFormat(path);
         this.gp = gp;
@@ -102,7 +105,7 @@ public class Generator {
     private void fileFormat(String path) throws IOException {
         try {
             if (path.endsWith(".txt")) {
-                this.analyser = new WordsLoader().load(path);
+                this.analyser = new LoaderWords().load(path);
             } else if (path.endsWith(".bin")) {
                 this.analyser = new LoaderBIN().load(path);
             } else if (path.endsWith(".swg")) {                         //new file format .swg
@@ -113,8 +116,19 @@ public class Generator {
         }
     }
 
-    void writeToConsole(Set<String> result) { //to another class
+    public void setGp(GeneratorParameters gp) {
+        this.gp = gp;
+    }
 
-        result.forEach(System.out::println);
+    public GeneratorParameters getGp() {
+        return gp;
+    }
+
+    public void setAnalyser(Analyser analyser) {
+        this.analyser = analyser;
+    }
+
+    public Analyser getAnalyser() {
+        return analyser;
     }
 }

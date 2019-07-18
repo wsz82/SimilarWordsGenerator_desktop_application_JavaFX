@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WordsLoader implements ILoader{
+public class LoaderWords implements ILoader{
 
     @Override
     public Analyser load (String path) {

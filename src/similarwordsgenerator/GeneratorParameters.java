@@ -5,9 +5,9 @@ class GeneratorParameters {
     private boolean sorted = true;
     private boolean firstCharAsInInput = true;
     private boolean lastCharAsInInput = true;
-    private int numberOfWords;
-    private int minWordLength;
-    private int maxWordLength;
+    private int numberOfWords = 1;
+    private int minWordLength = 0;
+    private int maxWordLength = 0;
 
     GeneratorParameters() {
     }

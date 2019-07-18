@@ -12,7 +12,7 @@ public class SaverBIN implements ISaver {
 
         try (
 
-                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path + ".bin"))
+                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path))
 
                 ) {
 
