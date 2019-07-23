@@ -109,8 +109,6 @@ public class Generator {
                 this.analyser = new LoaderWords().load(path);
             } else if (path.endsWith(".bin")) {
                 this.analyser = new LoaderBIN().load(path);
-            } else if (path.endsWith(".swg")) {                         //new file format .swg
-                this.analyser = new LoaderSWG().load(path);
             } else throw new IOException();
         } catch (IOException e) {
             throw new IOException("Wrong file format.");
