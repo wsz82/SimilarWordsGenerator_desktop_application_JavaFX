@@ -33,6 +33,5 @@ public class LoaderWords implements ILoader{
         }
 
         return new Analyser(loadList);
-
     }
 }

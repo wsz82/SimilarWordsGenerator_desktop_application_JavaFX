@@ -10,13 +10,13 @@ public class Generator {
     private boolean firstCharAsInInput = true;
     private boolean lastCharAsInInput = true;
     private int numberOfWords = 1;
-    private int minWordLength = 0;
-    private int maxWordLength = 0;
+    private int minWordLength = 0;          //number 0 is a flag for default word length
+    private int maxWordLength = 0;          //number 0 is a flag for default word length
 
     public Generator () {
     }
 
-    public Generator (List<String> input) throws IOException {
+    public Generator (List<String> input) {
         this.analyser = new Analyser(input);
     }
 
@@ -89,11 +89,10 @@ public class Generator {
 
             String tempWord = output.toString();
 
-            if (tempWord.length() < minWordLength && minWordLength != 0) {
-
+            if (minWordLength != 0 && tempWord.length() < minWordLength) {
                 continue;
-
-            } else if (tempWord.length() > maxWordLength && maxWordLength != 0) {
+            }
+            if (maxWordLength != 0 && tempWord.length() > maxWordLength) {
 
                 result.add(tempWord.substring(0, maxWordLength - 1));
 
@@ -123,51 +122,51 @@ public class Generator {
         return analyser;
     }
 
-    boolean isSorted() {
+    public boolean isSorted() {
         return sorted;
     }
 
-    void setSorted(boolean sorted) {
+    public void setSorted(boolean sorted) {
         this.sorted = sorted;
     }
 
-    boolean isFirstCharAsInInput() {
+    public boolean isFirstCharAsInInput() {
         return firstCharAsInInput;
     }
 
-    void setFirstCharAsInInput(boolean firstCharAsInInput) {
+    public void setFirstCharAsInInput(boolean firstCharAsInInput) {
         this.firstCharAsInInput = firstCharAsInInput;
     }
 
-    boolean isLastCharAsInInput() {
+    public boolean isLastCharAsInInput() {
         return lastCharAsInInput;
     }
 
-    void setLastCharAsInInput(boolean lastCharAsInInput) {
+    public void setLastCharAsInInput(boolean lastCharAsInInput) {
         this.lastCharAsInInput = lastCharAsInInput;
     }
 
-    int getNumberOfWords() {
+    public int getNumberOfWords() {
         return numberOfWords;
     }
 
-    void setNumberOfWords(int numberOfWords) {
+    public void setNumberOfWords(int numberOfWords) {
         this.numberOfWords = numberOfWords;
     }
 
-    int getMinWordLength() {
+    public int getMinWordLength() {
         return minWordLength;
     }
 
-    void setMinWordLength(int minWordLength) {
+    public void setMinWordLength(int minWordLength) {
         this.minWordLength = minWordLength;
     }
 
-    int getMaxWordLength() {
+    public int getMaxWordLength() {
         return maxWordLength;
     }
 
-    void setMaxWordLength(int maxWordLength) {
+    public void setMaxWordLength(int maxWordLength) {
         this.maxWordLength = maxWordLength;
     }
 }

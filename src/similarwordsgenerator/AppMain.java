@@ -1,22 +1,24 @@
 package similarwordsgenerator;
 
 import javafx.application.Application;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AppMain extends Application {
 
@@ -24,7 +26,7 @@ public class AppMain extends Application {
         launch(args);
     }
 
-    private Generator gn;
+    private Generator gn = new Generator();
     private String fileName;
     private ISaver saver = new SaverBIN();
     private SaverWords saverWords = new SaverWords();
@@ -35,7 +37,6 @@ public class AppMain extends Application {
         Group root = new Group();
         Scene scene = new Scene(root, 600, 600);
         primaryStage.setResizable(false);
-
         primaryStage.setTitle("Similar Words Generator");
 
         final FileChooser fcLoad = new FileChooser();
@@ -119,7 +120,7 @@ public class AppMain extends Application {
                 new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"),
                 new FileChooser.ExtensionFilter("Ratios", "*.bin"));
 
-        loadButton.setOnAction(e -> {
+        loadButton.setOnAction(f -> {
             File file = fcLoad.showOpenDialog(primaryStage);
             if (file != null) {
                 try {
@@ -129,14 +130,13 @@ public class AppMain extends Application {
                     inputManual.setText(file.getName());
                     inputManual.setEditable(false);
 
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
 
         inputManual.setTextFormatter(new TextFormatter<>(f -> {
-
             if (inputManual.getText().endsWith("\n\n")) {
 
                 f.setText("");
@@ -150,12 +150,11 @@ public class AppMain extends Application {
                 inputManual.setText("");
                 inputManual.setEditable(true);
 
-                gn = null;
+                gn.setAnalyser(null);
             }
         });
 
         inputManual.textProperty().addListener((ov, s, t) -> {
-
             if (!t.isEmpty()) {
 
                 saveRatiosButton.setDisable(false);
@@ -167,15 +166,11 @@ public class AppMain extends Application {
 
                     List<String> wordsToAnalyse = Arrays.asList(t.split("\n"));
 
-                    try {
-                        gn = new Generator(wordsToAnalyse);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    gn = new Generator(wordsToAnalyse);
                 }
             } else {
 
-                gn = null;
+                gn.setAnalyser(null);
 
                 saveRatiosButton.setDisable(true);
                 compressButton.setDisable(true);
@@ -249,24 +244,18 @@ public class AppMain extends Application {
                     loadButton.fire();
                 }
             }
-
         });
 
-        sorted.selectedProperty().addListener(
-                (ov, old_val, new_val) ->
-                    gn.setSorted(new_val)
+        sorted.selectedProperty().addListener((ov, old_val, new_val) ->
+                gn.setSorted(new_val)
         );
 
-        firstChar.selectedProperty().addListener(
-                (ObservableValue<? extends Boolean> ov,
-                 Boolean old_val, Boolean new_val) ->
-                        gn.setFirstCharAsInInput(new_val)
+        firstChar.selectedProperty().addListener((ov, old_val, new_val) ->
+                gn.setFirstCharAsInInput(new_val)
         );
 
-        lastChar.selectedProperty().addListener(
-                (ObservableValue<? extends Boolean> ov,
-                 Boolean old_val, Boolean new_val) ->
-                        gn.setLastCharAsInInput(new_val)
+        lastChar.selectedProperty().addListener((ov, old_val, new_val) ->
+                gn.setLastCharAsInInput(new_val)
         );
 
         final GridPane options = new GridPane();
