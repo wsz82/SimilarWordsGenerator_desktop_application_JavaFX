@@ -25,12 +25,9 @@ public class AppMain extends Application {
     }
 
     private Generator gn;
-    private GeneratorParameters gp = new GeneratorParameters();
-
+    private String fileName;
     private ISaver saver = new SaverBIN();
     private SaverWords saverWords = new SaverWords();
-
-    private String fileName;
 
     @Override
     public void start(Stage primaryStage) {
@@ -48,6 +45,7 @@ public class AppMain extends Application {
         final Button loadButton = new Button("Load");
         final Button generateButton = new Button("Generate");
         final Button saveRatiosButton = new Button("Save ratios");
+        saveRatiosButton.setDisable(true);
         final Button saveWordsButton = new Button("Save words");
         saveWordsButton.setDisable(true);
         final Button compressButton = new Button("Compress");
@@ -126,14 +124,10 @@ public class AppMain extends Application {
             if (file != null) {
                 try {
                     fileName = file.getName();
-                    gn = new Generator(file.getPath(), gp);
+                    gn = new Generator(file.getPath());
 
                     inputManual.setText(file.getName());
                     inputManual.setEditable(false);
-
-                    levelOfCompression.setDisable(false);
-                    levelOfCompressionLabel.setDisable(false);
-                    compressButton.setDisable(false);
 
                 } catch (IOException e1) {
                     e1.printStackTrace();
@@ -162,30 +156,41 @@ public class AppMain extends Application {
 
         inputManual.textProperty().addListener((ov, s, t) -> {
 
-            if (inputManual.getText().contains("\n\n")) {
-                inputManual.getText().replace("\n\n", "\n");
-            }
+            if (!t.isEmpty()) {
 
-            if (!t.isEmpty() && !t.equals(fileName)) {
-
+                saveRatiosButton.setDisable(false);
                 levelOfCompression.setDisable(false);
                 levelOfCompressionLabel.setDisable(false);
                 compressButton.setDisable(false);
 
-                List<String> wordsToAnalyse = Arrays.asList(t.split("\n"));
+                if (!t.equals(fileName)) {
 
-                try {
-                    gn = new Generator(wordsToAnalyse, gp);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    List<String> wordsToAnalyse = Arrays.asList(t.split("\n"));
+
+                    try {
+                        gn = new Generator(wordsToAnalyse);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
 
+                gn = null;
+
+                saveRatiosButton.setDisable(true);
                 compressButton.setDisable(true);
                 levelOfCompression.setDisable(true);
                 levelOfCompressionLabel.setDisable(true);
             }
 
+        });
+
+        output.textProperty().addListener((observableValue, s, t1) -> {
+            if (!output.getText().isEmpty()) {
+                saveWordsButton.setDisable(false);
+            } else {
+                saveWordsButton.setDisable(true);
+            }
         });
 
         saveRatiosButton.setOnAction(e -> {
@@ -204,21 +209,20 @@ public class AppMain extends Application {
             try {
                 output.setText("");
 
-                gp.setNumberOfWords(Integer.parseInt(numberOfWords.getText()));
+                gn.setNumberOfWords(Integer.parseInt(numberOfWords.getText()));
                 try {
-                    gp.setMinWordLength(Integer.parseInt(minWordLength.getText()));
+                    gn.setMinWordLength(Integer.parseInt(minWordLength.getText()));
                 } catch (NumberFormatException e) {
-                    gp.setMinWordLength(0);
+                    gn.setMinWordLength(0);
                 }
                 try {
-                    gp.setMaxWordLength(Integer.parseInt(maxWordLength.getText()));
+                    gn.setMaxWordLength(Integer.parseInt(maxWordLength.getText()));
                 } catch (NumberFormatException e) {
-                    gp.setMaxWordLength(0);
+                    gn.setMaxWordLength(0);
                 }
 
                 wordsToSave.removeAll(wordsToSave);
                 wordsToSave.addAll(gn.generate());
-                saveWordsButton.setDisable(false);
 
                 for (String word : wordsToSave) {
                     output.setText(output.getText() + (word + "\n"));
@@ -250,38 +254,38 @@ public class AppMain extends Application {
 
         sorted.selectedProperty().addListener(
                 (ov, old_val, new_val) ->
-                    gp.setSorted(new_val)
+                    gn.setSorted(new_val)
         );
 
         firstChar.selectedProperty().addListener(
                 (ObservableValue<? extends Boolean> ov,
                  Boolean old_val, Boolean new_val) ->
-                        gp.setFirstCharAsInInput(new_val)
+                        gn.setFirstCharAsInInput(new_val)
         );
 
         lastChar.selectedProperty().addListener(
                 (ObservableValue<? extends Boolean> ov,
                  Boolean old_val, Boolean new_val) ->
-                        gp.setLastCharAsInInput(new_val)
+                        gn.setLastCharAsInInput(new_val)
         );
 
         final GridPane options = new GridPane();
         GridPane.setConstraints(loadButton, 0,0);
         GridPane.setConstraints(generateButton, 0,1);
-        GridPane.setConstraints(saveRatiosButton, 0,2);
-        GridPane.setConstraints(sorted, 0,3);
-        GridPane.setConstraints(firstChar, 0,4);
-        GridPane.setConstraints(lastChar, 0,5);
-        GridPane.setConstraints(numberOfWordsLabel, 0,6);
-        GridPane.setConstraints(numberOfWords, 1,6);
-        GridPane.setConstraints(minWordLengthLabel, 0,7);
-        GridPane.setConstraints(minWordLength, 1,7);
-        GridPane.setConstraints(maxWordLengthLabel, 0,8);
-        GridPane.setConstraints(maxWordLength, 1,8);
-        GridPane.setConstraints(saveWordsButton, 0,9);
-        GridPane.setConstraints(levelOfCompressionLabel, 0,10);
-        GridPane.setConstraints(levelOfCompression, 1,10);
-        GridPane.setConstraints(compressButton, 0,11);
+        GridPane.setConstraints(sorted, 0,2);
+        GridPane.setConstraints(firstChar, 0,3);
+        GridPane.setConstraints(lastChar, 0,4);
+        GridPane.setConstraints(numberOfWordsLabel, 0,5);
+        GridPane.setConstraints(numberOfWords, 1,5);
+        GridPane.setConstraints(minWordLengthLabel, 0,6);
+        GridPane.setConstraints(minWordLength, 1,6);
+        GridPane.setConstraints(maxWordLengthLabel, 0,7);
+        GridPane.setConstraints(maxWordLength, 1,7);
+        GridPane.setConstraints(levelOfCompressionLabel, 0,8);
+        GridPane.setConstraints(levelOfCompression, 1,8);
+        GridPane.setConstraints(compressButton, 0,9);
+        GridPane.setConstraints(saveRatiosButton, 0,10);
+        GridPane.setConstraints(saveWordsButton, 0,11);
         options.setHgap(6);
         options.setVgap(6);
         options.getChildren().addAll(loadButton, generateButton, saveRatiosButton, sorted, firstChar, lastChar, numberOfWords, numberOfWordsLabel, minWordLength, minWordLengthLabel, maxWordLength, maxWordLengthLabel, saveWordsButton, levelOfCompressionLabel, levelOfCompression, compressButton);

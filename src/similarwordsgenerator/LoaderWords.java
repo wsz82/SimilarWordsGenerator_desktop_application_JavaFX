@@ -17,6 +17,7 @@ public class LoaderWords implements ILoader{
                 ){
 
             String temp;
+            br.mark(3);
 
             if (br.read() != '\ufeff') br.reset();
 

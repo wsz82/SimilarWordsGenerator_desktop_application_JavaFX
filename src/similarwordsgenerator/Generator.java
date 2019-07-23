@@ -6,48 +6,44 @@ import java.util.*;
 public class Generator {
 
     private Analyser analyser;
-    private GeneratorParameters gp;
+    private boolean sorted = true;
+    private boolean firstCharAsInInput = true;
+    private boolean lastCharAsInInput = true;
+    private int numberOfWords = 1;
+    private int minWordLength = 0;
+    private int maxWordLength = 0;
 
     public Generator () {
     }
 
-    public Generator (List<String> input, GeneratorParameters gp) throws IOException {
+    public Generator (List<String> input) throws IOException {
         this.analyser = new Analyser(input);
-        this.gp = gp;
     }
 
-    public Generator (String path, GeneratorParameters gp) throws IOException {
+    public Generator (String path) throws IOException {
         fileFormat(path);
-        this.gp = gp;
-    }
-
-    public Generator (String path, boolean sorted, boolean firstCharAsInInput, boolean lastCharAsInInput, int numberOfWords, int minWordLength, int maxWordLength) throws IOException {
-
-        fileFormat(path);
-
-        this.gp = new GeneratorParameters(sorted, firstCharAsInInput, lastCharAsInInput, numberOfWords, minWordLength, maxWordLength);
     }
 
     Set<String> generate() {
 
         Set<String> result;
 
-        if (gp.isSorted()) {
+        if (isSorted()) {
 
             result = new TreeSet<>();
 
         } else result = new HashSet<>();
 
-        while ( result.size() < gp.getNumberOfWords() ) {
+        while ( result.size() < getNumberOfWords() ) {
 
             StringBuilder output = new StringBuilder();
             Random r = new Random();
 
-            boolean firstCharAsInInput = gp.isFirstCharAsInInput();
-            boolean lastCharAsInInput = gp.isLastCharAsInInput();
+            boolean firstCharAsInInput = isFirstCharAsInInput();
+            boolean lastCharAsInInput = isLastCharAsInInput();
             int wordLength;
-            int maxWordLength = gp.getMaxWordLength();
-            int minWordLength = gp.getMinWordLength();
+            int maxWordLength = getMaxWordLength();
+            int minWordLength = getMinWordLength();
 
             if ( minWordLength != 0 && maxWordLength != 0 ) {
 
@@ -121,19 +117,59 @@ public class Generator {
         }
     }
 
-    public void setGp(GeneratorParameters gp) {
-        this.gp = gp;
-    }
-
-    public GeneratorParameters getGp() {
-        return gp;
-    }
-
     public void setAnalyser(Analyser analyser) {
         this.analyser = analyser;
     }
 
     public Analyser getAnalyser() {
         return analyser;
+    }
+
+    boolean isSorted() {
+        return sorted;
+    }
+
+    void setSorted(boolean sorted) {
+        this.sorted = sorted;
+    }
+
+    boolean isFirstCharAsInInput() {
+        return firstCharAsInInput;
+    }
+
+    void setFirstCharAsInInput(boolean firstCharAsInInput) {
+        this.firstCharAsInInput = firstCharAsInInput;
+    }
+
+    boolean isLastCharAsInInput() {
+        return lastCharAsInInput;
+    }
+
+    void setLastCharAsInInput(boolean lastCharAsInInput) {
+        this.lastCharAsInInput = lastCharAsInInput;
+    }
+
+    int getNumberOfWords() {
+        return numberOfWords;
+    }
+
+    void setNumberOfWords(int numberOfWords) {
+        this.numberOfWords = numberOfWords;
+    }
+
+    int getMinWordLength() {
+        return minWordLength;
+    }
+
+    void setMinWordLength(int minWordLength) {
+        this.minWordLength = minWordLength;
+    }
+
+    int getMaxWordLength() {
+        return maxWordLength;
+    }
+
+    void setMaxWordLength(int maxWordLength) {
+        this.maxWordLength = maxWordLength;
     }
 }
