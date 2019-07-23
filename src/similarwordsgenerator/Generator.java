@@ -11,6 +11,11 @@ public class Generator {
     public Generator () {
     }
 
+    public Generator (List<String> input, GeneratorParameters gp) throws IOException {
+        this.analyser = new Analyser(input);
+        this.gp = gp;
+    }
+
     public Generator (String path, GeneratorParameters gp) throws IOException {
         fileFormat(path);
         this.gp = gp;

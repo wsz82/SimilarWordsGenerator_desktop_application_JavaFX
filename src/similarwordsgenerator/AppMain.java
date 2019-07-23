@@ -2,23 +2,21 @@ package similarwordsgenerator;
 
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class AppMain extends Application {
 
@@ -32,16 +30,16 @@ public class AppMain extends Application {
     private ISaver saver = new SaverBIN();
     private SaverWords saverWords = new SaverWords();
 
+    private String fileName;
+
     @Override
     public void start(Stage primaryStage) {
 
         Group root = new Group();
-        Scene scene = new Scene(root, 400, 600);
+        Scene scene = new Scene(root, 600, 600);
         primaryStage.setResizable(false);
 
         primaryStage.setTitle("Similar Words Generator");
-        primaryStage.setMinHeight(600);
-        primaryStage.setMinWidth(400);
 
         final FileChooser fcLoad = new FileChooser();
         final FileChooser fcSaveRatios = new FileChooser();
@@ -56,34 +54,59 @@ public class AppMain extends Application {
         compressButton.setDisable(true);
 
         final CheckBox sorted = new CheckBox("Sort words");
+        sorted.setSelected(true);
         final CheckBox firstChar = new CheckBox("First char as in input");
+        firstChar.setSelected(true);
         final CheckBox lastChar = new CheckBox("Last char as in input");
+        lastChar.setSelected(true);
 
         final TextField numberOfWords = new TextField("1");
         final Label numberOfWordsLabel = new Label("Number of words:");
-        final TextField minWordLength = new TextField("0");
+        final TextField minWordLength = new TextField();
         final Label minWordLengthLabel = new Label("Min. word length:");
-        final TextField maxWordLength = new TextField("0");
+        final TextField maxWordLength = new TextField();
         final Label maxWordLengthLabel = new Label("Max. word length:");
         final TextField levelOfCompression = new TextField();
+        levelOfCompression.setDisable(true);
         final Label levelOfCompressionLabel = new Label("Level of compression:");
+        levelOfCompressionLabel.setDisable(true);
 
-        lastChar.setSelected(true);
+        final Label optionsLabel = new Label("Options");
 
-        firstChar.setSelected(true);
 
-        sorted.setSelected(true);
+        TextArea inputManual = new TextArea();
+        inputManual.setPrefSize(150,500);
+        final Label inputManualLabel = new Label("Input");
 
-        TextArea listOfWords = new TextArea();
-        listOfWords.setPrefSize(150,500);
-        listOfWords.setEditable(false);
+        TextArea output = new TextArea();
+        output.setPrefSize(150,500);
+        output.setEditable(false);
+        final Label outputLabel = new Label("Output");
 
         List<String> wordsToSave = new ArrayList<>();
 
+
         numberOfWords.setMaxWidth(50);
+        numberOfWords.setTextFormatter(new TextFormatter<>(this::filterForNumbersOfWords));
+
         minWordLength.setMaxWidth(50);
+        minWordLength.setTextFormatter(new TextFormatter<>(f -> filterForMinWordLength(maxWordLength, f)));
+
         maxWordLength.setMaxWidth(50);
+        maxWordLength.setTextFormatter(new TextFormatter<>(this::filterForMaxWordLength));
+        maxWordLength.focusedProperty().addListener((ov, old_val, new_val) -> {
+                    try {
+                        if (!new_val && !minWordLength.getText().isEmpty() && (Integer.parseInt(maxWordLength.getText()) < Integer.parseInt(minWordLength.getText()))) {
+                            maxWordLength.setText("");
+                        }
+                    } catch (NumberFormatException e) {
+                        maxWordLength.setText("");
+                    }
+                }
+        );
+
         levelOfCompression.setMaxWidth(50);
+        levelOfCompression.setTextFormatter(new TextFormatter<>(this::filterForLevelOfCompression));
 
         fcSaveRatios.setTitle("Save ratios to a file");
         fcSaveRatios.getExtensionFilters().add(
@@ -102,12 +125,67 @@ public class AppMain extends Application {
             File file = fcLoad.showOpenDialog(primaryStage);
             if (file != null) {
                 try {
+                    fileName = file.getName();
                     gn = new Generator(file.getPath(), gp);
+
+                    inputManual.setText(file.getName());
+                    inputManual.setEditable(false);
+
+                    levelOfCompression.setDisable(false);
+                    levelOfCompressionLabel.setDisable(false);
                     compressButton.setDisable(false);
+
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
+        });
+
+        inputManual.setTextFormatter(new TextFormatter<>(f -> {
+
+            if (inputManual.getText().endsWith("\n\n")) {
+
+                f.setText("");
+            }
+            return f;
+        }));
+
+        inputManual.setOnMouseClicked(mouseEvent -> {
+            if (inputManual.getText().equals(fileName) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
+
+                inputManual.setText("");
+                inputManual.setEditable(true);
+
+                gn = null;
+            }
+        });
+
+        inputManual.textProperty().addListener((ov, s, t) -> {
+
+            if (inputManual.getText().contains("\n\n")) {
+                inputManual.getText().replace("\n\n", "\n");
+            }
+
+            if (!t.isEmpty() && !t.equals(fileName)) {
+
+                levelOfCompression.setDisable(false);
+                levelOfCompressionLabel.setDisable(false);
+                compressButton.setDisable(false);
+
+                List<String> wordsToAnalyse = Arrays.asList(t.split("\n"));
+
+                try {
+                    gn = new Generator(wordsToAnalyse, gp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+
+                compressButton.setDisable(true);
+                levelOfCompression.setDisable(true);
+                levelOfCompressionLabel.setDisable(true);
+            }
+
         });
 
         saveRatiosButton.setOnAction(e -> {
@@ -122,20 +200,28 @@ public class AppMain extends Application {
             }
         });
 
-        generateButton.setOnAction(e -> {
+        generateButton.setOnAction(f -> {
             try {
-                listOfWords.setText("");
+                output.setText("");
 
                 gp.setNumberOfWords(Integer.parseInt(numberOfWords.getText()));
-                gp.setMinWordLength(Integer.parseInt(minWordLength.getText()));
-                gp.setMaxWordLength(Integer.parseInt(maxWordLength.getText()));
+                try {
+                    gp.setMinWordLength(Integer.parseInt(minWordLength.getText()));
+                } catch (NumberFormatException e) {
+                    gp.setMinWordLength(0);
+                }
+                try {
+                    gp.setMaxWordLength(Integer.parseInt(maxWordLength.getText()));
+                } catch (NumberFormatException e) {
+                    gp.setMaxWordLength(0);
+                }
 
                 wordsToSave.removeAll(wordsToSave);
                 wordsToSave.addAll(gn.generate());
                 saveWordsButton.setDisable(false);
 
                 for (String word : wordsToSave) {
-                    listOfWords.setText(listOfWords.getText() + (word + "\n"));
+                    output.setText(output.getText() + (word + "\n"));
                 }
             } catch (NullPointerException en) {
                 loadButton.fire();
@@ -163,8 +249,7 @@ public class AppMain extends Application {
         });
 
         sorted.selectedProperty().addListener(
-                (ObservableValue<? extends Boolean> ov,
-                 Boolean old_val, Boolean new_val) ->
+                (ov, old_val, new_val) ->
                     gp.setSorted(new_val)
         );
 
@@ -180,7 +265,7 @@ public class AppMain extends Application {
                         gp.setLastCharAsInInput(new_val)
         );
 
-        final GridPane gp = new GridPane();
+        final GridPane options = new GridPane();
         GridPane.setConstraints(loadButton, 0,0);
         GridPane.setConstraints(generateButton, 0,1);
         GridPane.setConstraints(saveRatiosButton, 0,2);
@@ -197,21 +282,90 @@ public class AppMain extends Application {
         GridPane.setConstraints(levelOfCompressionLabel, 0,10);
         GridPane.setConstraints(levelOfCompression, 1,10);
         GridPane.setConstraints(compressButton, 0,11);
-        gp.setHgap(6);
-        gp.setVgap(6);
-        gp.getChildren().addAll(loadButton, generateButton, saveRatiosButton, sorted, firstChar, lastChar, numberOfWords, numberOfWordsLabel, minWordLength, minWordLengthLabel, maxWordLength, maxWordLengthLabel, saveWordsButton, levelOfCompressionLabel, levelOfCompression, compressButton);
+        options.setHgap(6);
+        options.setVgap(6);
+        options.getChildren().addAll(loadButton, generateButton, saveRatiosButton, sorted, firstChar, lastChar, numberOfWords, numberOfWordsLabel, minWordLength, minWordLengthLabel, maxWordLength, maxWordLengthLabel, saveWordsButton, levelOfCompressionLabel, levelOfCompression, compressButton);
 
-        final Pane rg = new VBox(12);
-        rg.getChildren().addAll(gp);
-        rg.setPadding(new Insets(12, 12, 12, 12));
+        final VBox optionsPane = new VBox(12);
+        optionsPane.getChildren().addAll(optionsLabel, options);
+        optionsPane.setAlignment(Pos.TOP_CENTER);
+        optionsPane.setPadding(new Insets(12, 12, 12, 12));
+
+        final VBox inputManualPane = new VBox(12);
+        inputManualPane.getChildren().addAll(inputManualLabel, inputManual);
+        inputManualPane.setAlignment(Pos.TOP_CENTER);
+        inputManualPane.setPadding(new Insets(12, 12, 12, 12));
+
+        final VBox outputPane = new VBox(12);
+        outputPane.getChildren().addAll(outputLabel, output);
+        outputPane.setAlignment(Pos.TOP_CENTER);
+        outputPane.setPadding(new Insets(12, 12, 12, 12));
 
         final Pane hp = new HBox(12);
-        hp.getChildren().addAll(rg, listOfWords);
+        hp.getChildren().addAll(optionsPane, inputManualPane, outputPane);
         hp.setPadding(new Insets(12, 12, 12, 12));
 
         root.getChildren().addAll(hp);
         primaryStage.setScene(scene);
         primaryStage.show();
 
+    }
+
+    private TextFormatter.Change filterForLevelOfCompression(TextFormatter.Change f) {
+        try {
+            int input = Integer.parseInt(f.getControlNewText());
+            if ( input < 1 ) {
+                f.setText("");
+            }
+        } catch (NumberFormatException e) {
+            f.setText("");
+        }
+        if (f.getControlNewText().isEmpty()) {
+            f.setText("");
+        }
+        return f;
+    }
+
+    private TextFormatter.Change filterForMaxWordLength(TextFormatter.Change f) {
+        try {
+            int input = Integer.parseInt(f.getControlNewText());
+            if ( input < 1 ) {
+                f.setText("");
+            }
+        } catch (NumberFormatException e) {
+            f.setText("");
+        }
+        return f;
+    }
+
+    private TextFormatter.Change filterForMinWordLength(TextField maxWordLength, TextFormatter.Change f) {
+        try {
+            int input = Integer.parseInt(f.getControlNewText());
+            if ( input < 1 ) {
+                f.setText("");
+            }
+            if ( !maxWordLength.getText().isEmpty() && input > Integer.parseInt(maxWordLength.getText()) ) {
+                f.setText("");
+            }
+
+        } catch (NumberFormatException e) {
+            f.setText("");
+        }
+        return f;
+    }
+
+    private TextFormatter.Change filterForNumbersOfWords(TextFormatter.Change f) {
+        try {
+            int input = Integer.parseInt(f.getControlNewText());
+            if ( input < 1 ) {
+                f.setText("1");
+            }
+        } catch (NumberFormatException e) {
+            f.setText("");
+        }
+        if (f.getControlNewText().isEmpty()) {
+            f.setText("1");
+        }
+        return f;
     }
 }

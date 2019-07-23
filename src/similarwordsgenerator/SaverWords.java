@@ -15,12 +15,10 @@ public class SaverWords {
 
                 ) {
 
-            for (String s:
-                 listOfWords) {
+            for (String s: listOfWords) {
 
                 fw.write(s);
                 fw.newLine();
-
             }
 
         } catch (FileNotFoundException e) {

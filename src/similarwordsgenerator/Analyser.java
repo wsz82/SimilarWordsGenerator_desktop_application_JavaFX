@@ -22,6 +22,10 @@ class Analyser implements Serializable{
 
         for (String word : input) {
 
+            if (word.equals("")) {
+                continue;
+            }
+
             char[] tempWord = word.toCharArray();             //lower case should be optional
 
             wordLengths.add(word.length());

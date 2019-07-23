@@ -22,7 +22,7 @@ public class LoaderWords implements ILoader{
 
             while ( (temp = br.readLine()) != null ) {
 
-                loadList.add(temp);
+                if (!temp.equals("")) loadList.add(temp);
             }
 
         } catch (FileNotFoundException e) {
