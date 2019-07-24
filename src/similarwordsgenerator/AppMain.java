@@ -31,6 +31,9 @@ public class AppMain extends Application {
     private ISaver saver = new SaverBIN();
     private SaverWords saverWords = new SaverWords();
 
+    private Directory appDir = Directory.getInstance();         //doesn't work with application
+    private File appFile = appDir.getDirFile();
+
     @Override
     public void start(Stage primaryStage) {
 
@@ -40,8 +43,11 @@ public class AppMain extends Application {
         primaryStage.setTitle("Similar Words Generator");
 
         final FileChooser fcLoad = new FileChooser();
+        fcLoad.setInitialDirectory(appFile);
         final FileChooser fcSaveRatios = new FileChooser();
+        fcSaveRatios.setInitialDirectory(appFile);
         final FileChooser fcSaveWords = new FileChooser();
+        fcSaveWords.setInitialDirectory(appFile);
 
         final Button loadButton = new Button("Load");
         final Button generateButton = new Button("Generate");
