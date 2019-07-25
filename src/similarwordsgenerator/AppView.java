@@ -1,5 +1,7 @@
 package similarwordsgenerator;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -23,10 +25,15 @@ import javafx.stage.StageStyle;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class AppView {
 
@@ -39,9 +46,9 @@ public class AppView {
     private TextField minWordLength;
     private TextField maxWordLength;
     private TextField levelOfCompression;
+    private Label levelOfCompressionLabel;
     private Button saveRatiosButton;
     private Button saveWordsButton;
-    private Label levelOfCompressionLabel;
     private Button compressButton;
 
     private String path = null;
@@ -55,7 +62,7 @@ public class AppView {
     public void init (Stage primaryStage, Parameters initParameters, File userHomeProgram, ISaver saver, SaverWords saverWords, String mementoName, List<String> wordsToSave) {
 
         Group root = new Group();
-        Scene scene = new Scene(root, 600, 600);
+        Scene scene = new Scene(root, 650, 600);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Similar Words Generator");
 
@@ -75,6 +82,10 @@ public class AppView {
         compressButton = new Button("Compress");
         compressButton.setDisable(true);
 
+        final ChoiceBox<String> loadChoiceBox = new ChoiceBox<>();
+        loadChoiceBox.setMinWidth(100);
+        loadChoiceBox.setMaxWidth(100);
+
         sorted = new CheckBox("Sort words");
         sorted.setSelected(initParameters.isSorted());
         firstChar = new CheckBox("First char as in input");
@@ -84,7 +95,7 @@ public class AppView {
 
         numberOfWords = new TextField(Integer.toString(initParameters.getNumberOfWords()));
         final Label numberOfWordsLabel = new Label("Number of words:");
-        minWordLength = minMaxTextFields(initParameters.getMinWordLength()); //new TextField(Integer.toString(parameters.getMinWordLength()));
+        minWordLength = minMaxTextFields(initParameters.getMinWordLength());
         final Label minWordLengthLabel = new Label("Min. word length:");
         maxWordLength = minMaxTextFields(initParameters.getMaxWordLength());
         final Label maxWordLengthLabel = new Label("Max. word length:");
@@ -174,6 +185,34 @@ public class AppView {
                 settingOptionsDisibility(false);
             }
         }
+
+        loadChoiceBox.setOnMouseEntered(event -> {
+
+            List<String> ratiosFiles = new ArrayList<>();
+
+            try (
+                    Stream<Path> walk = Files.walk(Paths.get(userHomeProgram.getPath()))
+
+                    ) {
+
+                ratiosFiles = walk
+                        .map(e -> e.getFileName().toString())
+                        .filter(e -> e.endsWith(".bin"))
+                        .collect(Collectors.toList());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            ObservableList<String> ratiosFilesOb = FXCollections.observableArrayList(ratiosFiles);
+
+            if (loadChoiceBox.getItems().isEmpty()) {
+                loadChoiceBox.setItems(ratiosFilesOb);
+            }
+            else {
+                loadChoiceBox.setOnMouseClicked(nextEvent -> loadChoiceBox.setItems(ratiosFilesOb));
+            }
+        });
 
         loadButton.setOnAction(f -> {
             File file = fcLoad.showOpenDialog(primaryStage);
@@ -312,8 +351,12 @@ public class AppView {
 //                parameters.setSorted(new_val)
 //        );
 
+        final HBox loadBox = new HBox();
+        loadBox.getChildren().addAll(loadButton, loadChoiceBox);
+        loadBox.setSpacing(12);
+
         final GridPane options = new GridPane();
-        GridPane.setConstraints(loadButton, 0,0);
+        GridPane.setConstraints(loadBox, 0,0);
         GridPane.setConstraints(generateButton, 0,1);
         GridPane.setConstraints(sorted, 0,2);
         GridPane.setConstraints(firstChar, 0,3);
@@ -331,7 +374,7 @@ public class AppView {
         GridPane.setConstraints(saveWordsButton, 0,11);
         options.setHgap(6);
         options.setVgap(6);
-        options.getChildren().addAll(loadButton, generateButton, saveRatiosButton, sorted, firstChar, lastChar, numberOfWords, numberOfWordsLabel, minWordLength, minWordLengthLabel, maxWordLength, maxWordLengthLabel, saveWordsButton, levelOfCompressionLabel, levelOfCompression, compressButton);
+        options.getChildren().addAll(loadBox, generateButton, saveRatiosButton, sorted, firstChar, lastChar, numberOfWords, numberOfWordsLabel, minWordLength, minWordLengthLabel, maxWordLength, maxWordLengthLabel, saveWordsButton, levelOfCompressionLabel, levelOfCompression, compressButton);
 
         final VBox optionsPane = new VBox(12);
         optionsPane.getChildren().addAll(optionsLabel, options);
