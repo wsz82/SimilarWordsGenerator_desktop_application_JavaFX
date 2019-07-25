@@ -4,18 +4,25 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,16 +39,20 @@ public class AppView {
     private TextField minWordLength;
     private TextField maxWordLength;
     private TextField levelOfCompression;
+    private Button saveRatiosButton;
+    private Button saveWordsButton;
+    private Label levelOfCompressionLabel;
+    private Button compressButton;
 
-    private Path path = null;
-    private List<String> wordsToSave = new ArrayList<>();
-    private List<String> wordsToAnalyse = new ArrayList<>();
+    private String path = null;
+    private List<String> output = new ArrayList<>();
+    private List<String> input = new ArrayList<>();
 
     public AppView(Generator gn) {
         this.gn = gn;
     }
 
-    public void init (Stage primaryStage, Parameters initParameters, File userHomeProgram, ISaver saver, SaverWords saverWords) {
+    public void init (Stage primaryStage, Parameters initParameters, File userHomeProgram, ISaver saver, SaverWords saverWords, String mementoName, List<String> wordsToSave) {
 
         Group root = new Group();
         Scene scene = new Scene(root, 600, 600);
@@ -57,11 +68,11 @@ public class AppView {
 
         final Button loadButton = new Button("Load");
         final Button generateButton = new Button("Generate");
-        final Button saveRatiosButton = new Button("Save ratios");
+        saveRatiosButton = new Button("Save ratios");
         saveRatiosButton.setDisable(true);
-        final Button saveWordsButton = new Button("Save words");
+        saveWordsButton = new Button("Save words");
         saveWordsButton.setDisable(true);
-        final Button compressButton = new Button("Compress");
+        compressButton = new Button("Compress");
         compressButton.setDisable(true);
 
         sorted = new CheckBox("Sort words");
@@ -79,7 +90,7 @@ public class AppView {
         final Label maxWordLengthLabel = new Label("Max. word length:");
         levelOfCompression = new TextField();
         levelOfCompression.setDisable(true);
-        final Label levelOfCompressionLabel = new Label("Level of compression:");
+        levelOfCompressionLabel = new Label("Level of compression:");
         levelOfCompressionLabel.setDisable(true);
 
         final Label optionsLabel = new Label("Options");
@@ -132,21 +143,46 @@ public class AppView {
 
         primaryStage.setOnCloseRequest(event -> {
             Parameters parametersToSave = settingParameters();
-            new Memento(parametersToSave, wordsToSave);
+            new Memento(parametersToSave, this.output, userHomeProgram, mementoName);
         });
 
-//        primaryStage.onCloseRequestProperty().addListener(observable -> {
-//            Parameters parametersToSave = settingParameters();
-//            new Memento(parametersToSave, wordsToSave);
-//        });
+        if (initParameters.getInput() != null && !initParameters.getInput().isEmpty()) {
+            for (String word : initParameters.getInput()) {
+                inputManual.setText(inputManual.getText() + (word + "\n"));
+            }
+
+            input = initParameters.getInput();
+        }
+
+        if (wordsToSave != null && !wordsToSave.isEmpty()) {
+            for (String word : wordsToSave) {
+                output.setText(output.getText() + (word + "\n"));
+            }
+
+            saveWordsButton.setDisable(false);
+        }
+
+        if (initParameters.getPath() != null) {
+
+            boolean fileExists = new File (initParameters.getPath()).exists();
+
+            if (fileExists) {
+
+                inputManual.setText(new File(initParameters.getPath()).getName());
+                path = initParameters.getPath();
+
+                settingOptionsDisibility(false);
+            }
+        }
 
         loadButton.setOnAction(f -> {
             File file = fcLoad.showOpenDialog(primaryStage);
 
             if (file != null) {
-                path = file.toPath();
-                inputManual.setText(path.getFileName().toString());
+                path = file.getPath();
+                inputManual.setText(file.getName());
                 inputManual.setEditable(false);
+                input = new ArrayList<>();
             }
         });
 
@@ -159,10 +195,10 @@ public class AppView {
         }));
 
         inputManual.setOnMouseClicked(mouseEvent -> {
-            if ( !inputManual.getText().isEmpty() && path != null && inputManual.getText().equals(path.getFileName().toString()) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
+            if ( !inputManual.getText().isEmpty() && path != null && inputManual.getText().equals(new File(path).getName()) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
 
                 path = null;
-                wordsToAnalyse = Collections.emptyList();
+                input = Collections.emptyList();
 
                 inputManual.setText("");
                 inputManual.setEditable(true);
@@ -171,31 +207,20 @@ public class AppView {
         });
 
         inputManual.textProperty().addListener((ov, s, t) -> {
-
-//            if (path != null) {
-//                inputManual.setText(path.getFileName().toString());       //change to initParameters
-//            }
-
             if (!t.isEmpty()) {
 
                 if (path == null) {
-                    wordsToAnalyse = Arrays.asList(t.split("\n"));
+                    input = Arrays.asList(t.split("\n"));
                 }
 
-                saveRatiosButton.setDisable(false);
-                levelOfCompression.setDisable(false);
-                levelOfCompressionLabel.setDisable(false);
-                compressButton.setDisable(false);
+                settingOptionsDisibility(false);
 
             } else {
 
                 path = null;
-                wordsToAnalyse = Collections.emptyList();
+                input = Collections.emptyList();
 
-                saveRatiosButton.setDisable(true);
-                compressButton.setDisable(true);
-                levelOfCompression.setDisable(true);
-                levelOfCompressionLabel.setDisable(true);
+                settingOptionsDisibility(true);
             }
 
         });
@@ -216,7 +241,7 @@ public class AppView {
         saveWordsButton.setOnAction(e -> {
             File file = fcSaveWords.showSaveDialog(primaryStage);
             if (file != null) {
-                saverWords.save(wordsToSave, file.getPath());
+                saverWords.save(this.output, file.getPath());
             }
         });
 
@@ -225,15 +250,38 @@ public class AppView {
                 output.setText("");
                 Parameters parameters = settingParameters();
 
-                wordsToSave.removeAll(wordsToSave);
+                this.output.removeAll(this.output);
 
                 try {
-                    wordsToSave.addAll(gn.generate(parameters));
+                    this.output.addAll(gn.generate(parameters));
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+
+                    Toolkit.getDefaultToolkit().beep();
+
+                    Stage errorStage = new Stage();
+                    errorStage.setResizable(false);
+                    errorStage.setAlwaysOnTop(true);
+                    errorStage.initModality(Modality.APPLICATION_MODAL);
+                    errorStage.initStyle(StageStyle.DECORATED);
+                    errorStage.setTitle("Input error");
+
+                    VBox errorPane = new VBox();
+
+                    Scene errorScene = new Scene(errorPane, 300, 100);
+
+                    Text errorText = new Text("Wrong input data format!");
+
+                    errorPane.getChildren().add(errorText);
+                    errorPane.setAlignment(Pos.CENTER);
+                    errorPane.setPadding(new Insets(12, 12, 12, 12));
+
+                    errorStage.setScene(errorScene);
+                    errorStage.show();
                 }
 
-                for (String word : wordsToSave) {
+                for (String word : this.output) {
                     output.setText(output.getText() + (word + "\n"));
                 }
             } catch (NullPointerException en) {
@@ -260,16 +308,8 @@ public class AppView {
             }
         });
 
-//        sorted.selectedProperty().addListener((ov, old_val, new_val) ->       // chyba niepotrzebne
+//        sorted.selectedProperty().addListener((ov, old_val, new_val) ->
 //                parameters.setSorted(new_val)
-//        );
-//
-//        firstChar.selectedProperty().addListener((ov, old_val, new_val) ->
-//                gn.setFirstCharAsInInput(new_val)
-//        );
-//
-//        lastChar.selectedProperty().addListener((ov, old_val, new_val) ->
-//                gn.setLastCharAsInInput(new_val)
 //        );
 
         final GridPane options = new GridPane();
@@ -315,7 +355,14 @@ public class AppView {
         root.getChildren().addAll(hp);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
 
+    private void settingOptionsDisibility(boolean boo) {
+
+        saveRatiosButton.setDisable(boo);
+        levelOfCompression.setDisable(boo);
+        levelOfCompressionLabel.setDisable(boo);
+        compressButton.setDisable(boo);
     }
 
     private Parameters settingParameters() {
@@ -336,11 +383,8 @@ public class AppView {
         parametersBuilder.setFirstCharAsInInput(firstChar.isSelected());
         parametersBuilder.setLastCharAsInInput(lastChar.isSelected());
         parametersBuilder.setSorted(sorted.isSelected());
-        if (!levelOfCompression.getText().equals("")) {
-            parametersBuilder.setCompressionNumber(Integer.parseInt(levelOfCompression.getText()));
-        }
         parametersBuilder.setPath(path);
-        parametersBuilder.setInput(wordsToAnalyse);
+        parametersBuilder.setInput(input);
 
         return parametersBuilder.build();
     }

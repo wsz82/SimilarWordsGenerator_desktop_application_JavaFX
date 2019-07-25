@@ -1,21 +1,19 @@
 package similarwordsgenerator;
 
 import java.io.Serializable;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
 public final class Parameters implements Serializable {
 
-    transient private final List<String> input;
+    private final List<String> input;
     private final boolean sorted;
     private final boolean firstCharAsInInput;
     private final boolean lastCharAsInInput;
     private final int numberOfWords;
     private final int minWordLength ;
     private final int maxWordLength;
-    transient private final Path path;
-    private final int compressionNumber;
+    private final String path;
 
     private Parameters(Builder builder) {
         this.input = builder.input;
@@ -26,7 +24,6 @@ public final class Parameters implements Serializable {
         this.minWordLength = builder.minWordLength;
         this.maxWordLength = builder.maxWordLength;
         this.path = builder.path;
-        this.compressionNumber = builder.compressionNumber;
     }
 
     public List<String> getInput() {
@@ -57,12 +54,8 @@ public final class Parameters implements Serializable {
         return maxWordLength;
     }
 
-    public Path getPath() {
+    public String getPath() {
         return path;
-    }
-
-    public int getCompressionNumber() {
-        return compressionNumber;
     }
 
     public final static class Builder {
@@ -74,8 +67,7 @@ public final class Parameters implements Serializable {
         private int numberOfWords = 1;
         private int minWordLength = 0;  //number 0 is a flag for default word length
         private int maxWordLength = 0;  //number 0 is a flag for default word length
-        private Path path;
-        private int compressionNumber;
+        private String path;
 
         public Builder setInput(List<String> input) {
             this.input = input;
@@ -112,13 +104,8 @@ public final class Parameters implements Serializable {
             return this;
         }
 
-        public Builder setPath(Path path) {
+        public Builder setPath(String path) {
             this.path = path;
-            return this;
-        }
-
-        public Builder setCompressionNumber(int compressionNumber) {
-            this.compressionNumber = compressionNumber;
             return this;
         }
 

@@ -1,7 +1,7 @@
 package similarwordsgenerator;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 public class Generator {
@@ -94,10 +94,11 @@ public class Generator {
     private void fileFormat(Parameters parameters) throws IOException {
         if (parameters.getInput().isEmpty()) {
             try {
-                Path path = parameters.getPath();
-                if (path.getFileName().toString().endsWith(".txt")) {
+                String path = parameters.getPath();
+                File file = new File(path);
+                if (file.getName().endsWith(".txt")) {
                     this.analyser = new LoaderWords().load(path);
-                } else if (path.getFileName().toString().endsWith(".bin")) {
+                } else if (file.getName().endsWith(".bin")) {
                     this.analyser = new LoaderBIN().load(path);
                 } else throw new IOException();
             } catch (IOException e) {

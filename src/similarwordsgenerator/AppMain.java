@@ -22,13 +22,14 @@ public class AppMain extends Application {
 
         Directory dir = Directory.getInstance();
         File userHomeProgram = dir.getUserHomeProgram();
+        String mementoName = "memento";
 
         similarwordsgenerator.Parameters parameters;
-        boolean mementoExists = new File(userHomeProgram + File.separator + "memento.bin").exists();
+        boolean mementoExists = new File(userHomeProgram + File.separator + mementoName).exists();
 
         if (mementoExists) {
 
-            Memento memento = Memento.loadMemento(userHomeProgram);
+            Memento memento = Memento.loadMemento(userHomeProgram, mementoName);
             parameters = memento.getParameters();
             wordsToSave = memento.getWordsToSave();
 
@@ -38,6 +39,6 @@ public class AppMain extends Application {
 
         Generator gn = new Generator();
         AppView view = new AppView(gn);
-        view.init(primaryStage, parameters, userHomeProgram, saver, saverWords);
+        view.init(primaryStage, parameters, userHomeProgram, saver, saverWords, mementoName, wordsToSave);
     }
 }

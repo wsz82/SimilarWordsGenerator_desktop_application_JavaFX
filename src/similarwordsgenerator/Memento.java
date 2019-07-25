@@ -11,17 +11,14 @@ public class Memento implements Serializable {
     public Memento() {
     }
 
-    public Memento(Parameters parameters, List<String> wordsToSave) {
+    public Memento(Parameters parameters, List<String> wordsToSave, File userHomeProgram, String mementoName) {
 
         this.parameters = parameters;
         this.wordsToSave = wordsToSave;
 
-        Directory dir = Directory.getInstance();
-        File userHomeProgram = dir.getUserHomeProgram();
-
         try (
 
-                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(userHomeProgram + File.separator + "memento.bin"))
+                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(userHomeProgram + File.separator + mementoName))
 
         ) {
 
@@ -34,12 +31,12 @@ public class Memento implements Serializable {
         }
     }
 
-    static Memento loadMemento (File userHomeProgram) {
+    static Memento loadMemento (File userHomeProgram, String mementoName) {
 
         Memento memento = new Memento();
 
         try (
-                ObjectInputStream os = new ObjectInputStream(new FileInputStream(userHomeProgram + File.separator + "memento.bin"))
+                ObjectInputStream os = new ObjectInputStream(new FileInputStream(userHomeProgram + File.separator + mementoName))
         ) {
 
             memento = (Memento) os.readObject();

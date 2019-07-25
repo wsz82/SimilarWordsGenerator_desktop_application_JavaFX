@@ -2,19 +2,18 @@ package similarwordsgenerator;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LoaderWords implements ILoader{
 
     @Override
-    public Analyser load (Path path) {
+    public Analyser load (String path) {
 
         List<String> loadList = new ArrayList<>();
 
         try (
-                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path.toString()), StandardCharsets.UTF_8))
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))
                 ){
 
             String temp;
