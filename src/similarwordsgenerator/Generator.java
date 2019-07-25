@@ -1,49 +1,38 @@
 package similarwordsgenerator;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Generator {
 
     private Analyser analyser;
-    private boolean sorted = true;
-    private boolean firstCharAsInInput = true;
-    private boolean lastCharAsInInput = true;
-    private int numberOfWords = 1;
-    private int minWordLength = 0;          //number 0 is a flag for default word length
-    private int maxWordLength = 0;          //number 0 is a flag for default word length
 
     public Generator () {
     }
 
-    public Generator (List<String> input) {
-        this.analyser = new Analyser(input);
-    }
+    Set<String> generate(Parameters parameters) throws IOException {
 
-    public Generator (String path) throws IOException {
-        fileFormat(path);
-    }
-
-    Set<String> generate() {
+        fileFormat(parameters);
 
         Set<String> result;
 
-        if (isSorted()) {
+        if (parameters.isSorted()) {
 
             result = new TreeSet<>();
 
         } else result = new HashSet<>();
 
-        while ( result.size() < getNumberOfWords() ) {
+        while ( result.size() < parameters.getNumberOfWords() ) {
 
             StringBuilder output = new StringBuilder();
             Random r = new Random();
 
-            boolean firstCharAsInInput = isFirstCharAsInInput();
-            boolean lastCharAsInInput = isLastCharAsInInput();
+            boolean firstCharAsInInput = parameters.isFirstCharAsInInput();
+            boolean lastCharAsInInput = parameters.isLastCharAsInInput();
             int wordLength;
-            int maxWordLength = getMaxWordLength();
-            int minWordLength = getMinWordLength();
+            int maxWordLength = parameters.getMaxWordLength();
+            int minWordLength = parameters.getMinWordLength();
 
             if ( minWordLength != 0 && maxWordLength != 0 ) {
 
@@ -102,71 +91,24 @@ public class Generator {
         return result;
     }
 
-    private void fileFormat(String path) throws IOException {
-        try {
-            if (path.endsWith(".txt")) {
-                this.analyser = new LoaderWords().load(path);
-            } else if (path.endsWith(".bin")) {
-                this.analyser = new LoaderBIN().load(path);
-            } else throw new IOException();
-        } catch (IOException e) {
-            throw new IOException("Wrong file format.");
+    private void fileFormat(Parameters parameters) throws IOException {
+        if (parameters.getInput().isEmpty()) {
+            try {
+                Path path = parameters.getPath();
+                if (path.getFileName().toString().endsWith(".txt")) {
+                    this.analyser = new LoaderWords().load(path);
+                } else if (path.getFileName().toString().endsWith(".bin")) {
+                    this.analyser = new LoaderBIN().load(path);
+                } else throw new IOException();
+            } catch (IOException e) {
+                throw new IOException("Wrong file format.");
+            }
+        } else {
+            this.analyser = new Analyser(parameters.getInput());
         }
-    }
-
-    public void setAnalyser(Analyser analyser) {
-        this.analyser = analyser;
     }
 
     public Analyser getAnalyser() {
         return analyser;
-    }
-
-    public boolean isSorted() {
-        return sorted;
-    }
-
-    public void setSorted(boolean sorted) {
-        this.sorted = sorted;
-    }
-
-    public boolean isFirstCharAsInInput() {
-        return firstCharAsInInput;
-    }
-
-    public void setFirstCharAsInInput(boolean firstCharAsInInput) {
-        this.firstCharAsInInput = firstCharAsInInput;
-    }
-
-    public boolean isLastCharAsInInput() {
-        return lastCharAsInInput;
-    }
-
-    public void setLastCharAsInInput(boolean lastCharAsInInput) {
-        this.lastCharAsInInput = lastCharAsInInput;
-    }
-
-    public int getNumberOfWords() {
-        return numberOfWords;
-    }
-
-    public void setNumberOfWords(int numberOfWords) {
-        this.numberOfWords = numberOfWords;
-    }
-
-    public int getMinWordLength() {
-        return minWordLength;
-    }
-
-    public void setMinWordLength(int minWordLength) {
-        this.minWordLength = minWordLength;
-    }
-
-    public int getMaxWordLength() {
-        return maxWordLength;
-    }
-
-    public void setMaxWordLength(int maxWordLength) {
-        this.maxWordLength = maxWordLength;
     }
 }

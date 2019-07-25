@@ -1,10 +1,9 @@
 package similarwordsgenerator;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 public class Directory {
-    private File dirFile;
+    private File userHomeProgram;
     private static Directory ourInstance = new Directory();
 
     public static Directory getInstance() {
@@ -12,15 +11,15 @@ public class Directory {
     }
 
     private Directory() {
-        try {
-            dirFile = new File(AppMain.class.getProtectionDomain().getCodeSource().getLocation()
-                    .toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+
+        String path = System.getProperty("user.home") + File.separator + ".similarwordsgenerator";
+
+        new File(path).mkdir();
+
+        userHomeProgram = new File(path);
     }
 
-    public File getDirFile() {
-        return dirFile;
+    public File getUserHomeProgram() {
+        return userHomeProgram;
     }
 }

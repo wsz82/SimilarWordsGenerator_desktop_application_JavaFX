@@ -1,7 +1,9 @@
 package similarwordsgenerator;
 
+import java.nio.file.Path;
+
 public interface ILoader {
 
-    Analyser load (String path);
+    Analyser load (Path path);
 
 }

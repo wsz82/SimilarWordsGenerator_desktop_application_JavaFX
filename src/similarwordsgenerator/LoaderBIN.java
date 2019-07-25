@@ -4,16 +4,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.file.Path;
 
 public class LoaderBIN implements ILoader {
 
     @Override
-    public Analyser load(String path) {
+    public Analyser load(Path path) {
 
         Analyser analyser = new Analyser();
 
         try (
-                ObjectInputStream os = new ObjectInputStream(new FileInputStream(path))
+                ObjectInputStream os = new ObjectInputStream(new FileInputStream(path.toString()))
                 ) {
 
             analyser = (Analyser) os.readObject();
