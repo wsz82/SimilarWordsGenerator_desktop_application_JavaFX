@@ -28,10 +28,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -107,13 +105,13 @@ public class AppView {
         final Label optionsLabel = new Label("Options");
 
 
-        TextArea inputManual = new TextArea();
-        inputManual.setPrefSize(150,500);
+        TextArea inputArea = new TextArea();
+        inputArea.setPrefSize(150,500);
         final Label inputManualLabel = new Label("Input");
 
-        TextArea output = new TextArea();
-        output.setPrefSize(150,500);
-        output.setEditable(false);
+        TextArea outputArea = new TextArea();
+        outputArea.setPrefSize(150,500);
+        outputArea.setEditable(false);
         final Label outputLabel = new Label("Output");
 
 
@@ -158,8 +156,9 @@ public class AppView {
         });
 
         if (initParameters.getInput() != null && !initParameters.getInput().isEmpty()) {
+
             for (String word : initParameters.getInput()) {
-                inputManual.setText(inputManual.getText() + (word + "\n"));
+                inputArea.setText(inputArea.getText() + (word + "\n"));
             }
 
             input = initParameters.getInput();
@@ -167,7 +166,7 @@ public class AppView {
 
         if (wordsToSave != null && !wordsToSave.isEmpty()) {
             for (String word : wordsToSave) {
-                output.setText(output.getText() + (word + "\n"));
+                outputArea.setText(outputArea.getText() + (word + "\n"));
             }
 
             saveWordsButton.setDisable(false);
@@ -179,7 +178,7 @@ public class AppView {
 
             if (fileExists) {
 
-                inputManual.setText(new File(initParameters.getPath()).getName());
+                inputArea.setText(new File(initParameters.getPath()).getName());
                 path = initParameters.getPath();
 
                 settingOptionsDisibility(false);
@@ -191,8 +190,8 @@ public class AppView {
 
                 path = userHomeProgram + File.separator + newValue;
                 input = Collections.emptyList();
-                inputManual.setText(newValue);
-                inputManual.setEditable(false);
+                inputArea.setText(newValue);
+                inputArea.setEditable(false);
 
             }
         });
@@ -230,35 +229,35 @@ public class AppView {
 
             if (file != null) {
                 path = file.getPath();
-                inputManual.setText(file.getName());
-                inputManual.setEditable(false);
+                inputArea.setText(file.getName());
+                inputArea.setEditable(false);
                 input = Collections.emptyList();
                 loadChoiceBox.setValue(null);
             }
         });
 
-        inputManual.setTextFormatter(new TextFormatter<>(f -> {
-            if (inputManual.getText().endsWith("\n\n")) {
+        inputArea.setTextFormatter(new TextFormatter<>(f -> {
+            if (inputArea.getText().endsWith("\n\n")) {
 
                 f.setText("");
             }
             return f;
         }));
 
-        inputManual.setOnMouseClicked(mouseEvent -> {
-            if ( !inputManual.getText().isEmpty() && path != null && inputManual.getText().equals(new File(path).getName()) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
+        inputArea.setOnMouseClicked(mouseEvent -> {
+            if ( !inputArea.getText().isEmpty() && path != null && inputArea.getText().equals(new File(path).getName()) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
 
                 path = null;
                 input = Collections.emptyList();
 
-                inputManual.setText("");
-                inputManual.setEditable(true);
+                inputArea.setText("");
+                inputArea.setEditable(true);
                 loadChoiceBox.setValue(null);
 
             }
         });
 
-        inputManual.textProperty().addListener((ov, s, t) -> {
+        inputArea.textProperty().addListener((ov, s, t) -> {
             if (!t.isEmpty()) {
 
                 if (path == null) {
@@ -277,8 +276,8 @@ public class AppView {
 
         });
 
-        output.textProperty().addListener((observableValue, s, t1) -> {
-            if (!output.getText().isEmpty()) {
+        outputArea.textProperty().addListener((observableValue, s, t1) -> {
+            if (!outputArea.getText().isEmpty()) {
                 saveWordsButton.setDisable(false);
             } else {
                 saveWordsButton.setDisable(true);
@@ -298,46 +297,34 @@ public class AppView {
         });
 
         generateButton.setOnAction(f -> {
-            try {
-                output.setText("");
-                Parameters parameters = settingParameters();
 
+            Parameters parameters = settingParameters();
+
+            try {
+
+                //Clearing output for new words
                 this.output.removeAll(this.output);
 
                 try {
+                    //Generating new words
                     this.output.addAll(gn.generate(parameters));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (IllegalArgumentException e) {
-
-                    Toolkit.getDefaultToolkit().beep();
-
-                    Stage errorStage = new Stage();
-                    errorStage.setResizable(false);
-                    errorStage.setAlwaysOnTop(true);
-                    errorStage.initModality(Modality.APPLICATION_MODAL);
-                    errorStage.initStyle(StageStyle.DECORATED);
-                    errorStage.setTitle("Input error");
-
-                    VBox errorPane = new VBox();
-
-                    Scene errorScene = new Scene(errorPane, 300, 100);
-
-                    Text errorText = new Text("Wrong input data format!");
-
-                    errorPane.getChildren().add(errorText);
-                    errorPane.setAlignment(Pos.CENTER);
-                    errorPane.setPadding(new Insets(12, 12, 12, 12));
-
-                    errorStage.setScene(errorScene);
-                    errorStage.show();
+                } catch (NullPointerException en) {
+                    //If no file is loaded so program asks us to load a file
+                    loadButton.fire();
                 }
 
-                for (String word : this.output) {
-                    output.setText(output.getText() + (word + "\n"));
-                }
-            } catch (NullPointerException en) {
-                loadButton.fire();
+                //Emptying output area for new words
+                outputArea.setText("");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                //Error message if input is wrong
+                errorInput();
+            }
+
+            for (String word : this.output) {
+                outputArea.setText(outputArea.getText() + (word + "\n"));
             }
         });
 
@@ -360,9 +347,24 @@ public class AppView {
             }
         });
 
-//        sorted.selectedProperty().addListener((ov, old_val, new_val) ->
-//                parameters.setSorted(new_val)
-//        );
+        sorted.selectedProperty().addListener((ov, old_val, new_val) -> {
+
+            Set<String> words;
+            List<String> wordsFromOutput = Arrays.asList(outputArea.getText().split("\n"));
+            outputArea.setText("");
+
+            if (new_val) {
+                words = new TreeSet<>(wordsFromOutput);
+            } else {
+                words = new HashSet<>(wordsFromOutput);
+            }
+
+            output = new ArrayList<>(words);
+
+            for (String word : words) {
+                outputArea.setText(outputArea.getText() + (word + "\n"));
+            }
+        });
 
         final HBox loadBox = new HBox();
         loadBox.getChildren().addAll(loadButton, loadChoiceBox);
@@ -395,12 +397,12 @@ public class AppView {
         optionsPane.setPadding(new Insets(12, 12, 12, 12));
 
         final VBox inputManualPane = new VBox(12);
-        inputManualPane.getChildren().addAll(inputManualLabel, inputManual);
+        inputManualPane.getChildren().addAll(inputManualLabel, inputArea);
         inputManualPane.setAlignment(Pos.TOP_CENTER);
         inputManualPane.setPadding(new Insets(12, 12, 12, 12));
 
         final VBox outputPane = new VBox(12);
-        outputPane.getChildren().addAll(outputLabel, output);
+        outputPane.getChildren().addAll(outputLabel, outputArea);
         outputPane.setAlignment(Pos.TOP_CENTER);
         outputPane.setPadding(new Insets(12, 12, 12, 12));
 
@@ -411,6 +413,30 @@ public class AppView {
         root.getChildren().addAll(hp);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void errorInput() {
+        Toolkit.getDefaultToolkit().beep();
+
+        Stage errorStage = new Stage();
+        errorStage.setResizable(false);
+        errorStage.setAlwaysOnTop(true);
+        errorStage.initModality(Modality.APPLICATION_MODAL);
+        errorStage.initStyle(StageStyle.DECORATED);
+        errorStage.setTitle("Input error");
+
+        VBox errorPane = new VBox();
+
+        Scene errorScene = new Scene(errorPane, 300, 100);
+
+        Text errorText = new Text("Wrong input data format!");
+
+        errorPane.getChildren().add(errorText);
+        errorPane.setAlignment(Pos.CENTER);
+        errorPane.setPadding(new Insets(12, 12, 12, 12));
+
+        errorStage.setScene(errorScene);
+        errorStage.show();
     }
 
     private void settingOptionsDisibility(boolean boo) {
