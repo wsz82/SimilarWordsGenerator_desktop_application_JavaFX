@@ -3,15 +3,15 @@ package similarwordsgenerator;
 import java.io.*;
 import java.util.List;
 
-public class Memento implements Serializable {
+class Memento implements Serializable {
 
     private Parameters parameters;
     private List<String> wordsToSave;
 
-    public Memento() {
+    Memento() {
     }
 
-    public Memento(Parameters parameters, List<String> wordsToSave, File userHomeProgram, String mementoName) {
+    Memento(Parameters parameters, List<String> wordsToSave, File userHomeProgram, String mementoName) {
 
         this.parameters = parameters;
         this.wordsToSave = wordsToSave;
@@ -24,8 +24,6 @@ public class Memento implements Serializable {
 
             os.writeObject(this);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,8 +39,6 @@ public class Memento implements Serializable {
 
             memento = (Memento) os.readObject();
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -53,11 +49,11 @@ public class Memento implements Serializable {
     }
 
 
-    public Parameters getParameters() {
+    Parameters getParameters() {
         return parameters;
     }
 
-    public List<String> getWordsToSave() {
+    List<String> getWordsToSave() {
         return wordsToSave;
     }
 }

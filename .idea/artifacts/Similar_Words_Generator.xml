@@ -6,12 +6,14 @@
         <option name="alias" value="" />
         <option name="appClass" value="similarwordsgenerator.AppMain" />
         <option name="description" value="" />
+        <option name="height" value="600" />
         <option name="htmlPlaceholderId" value="" />
         <option name="keystore" value="" />
         <option name="nativeBundle" value="all" />
         <option name="title" value="Similar Words Generator" />
         <option name="vendor" value="wsz82" />
         <option name="version" value="alpha" />
+        <option name="width" value="650" />
       </options>
     </properties>
     <root id="root">

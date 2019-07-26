@@ -33,7 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AppView {
+class AppView {
 
     private final Generator gn;
 
@@ -53,11 +53,11 @@ public class AppView {
     private List<String> output = new ArrayList<>();
     private List<String> input = new ArrayList<>();
 
-    public AppView(Generator gn) {
+    AppView(Generator gn) {
         this.gn = gn;
     }
 
-    public void init (Stage primaryStage, Parameters initParameters, File userHomeProgram, ISaver saver, SaverWords saverWords, String mementoName, List<String> wordsToSave) {
+    void init (Stage primaryStage, Parameters initParameters, File userHomeProgram, ISaver saver, SaverWords saverWords, String mementoName, List<String> wordsToSave) {
 
         Group root = new Group();
         Scene scene = new Scene(root, 650, 600);

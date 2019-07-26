@@ -20,8 +20,11 @@ public class AppMain extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Directory dir = Directory.getInstance();
-        File userHomeProgram = dir.getUserHomeProgram();
+        File userHomeProgram;
+        String path = System.getProperty("user.home") + File.separator + ".similarwordsgenerator";
+        new File(path).mkdir();
+        userHomeProgram = new File(path);
+
         String mementoName = "memento";
 
         similarwordsgenerator.Parameters parameters;
