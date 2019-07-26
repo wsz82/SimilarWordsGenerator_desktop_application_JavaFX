@@ -186,6 +186,17 @@ public class AppView {
             }
         }
 
+        loadChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+
+                path = userHomeProgram + File.separator + newValue;
+                input = Collections.emptyList();
+                inputManual.setText(newValue);
+                inputManual.setEditable(false);
+
+            }
+        });
+
         loadChoiceBox.setOnMouseEntered(event -> {
 
             List<String> ratiosFiles = new ArrayList<>();
@@ -221,7 +232,8 @@ public class AppView {
                 path = file.getPath();
                 inputManual.setText(file.getName());
                 inputManual.setEditable(false);
-                input = new ArrayList<>();
+                input = Collections.emptyList();
+                loadChoiceBox.setValue(null);
             }
         });
 
@@ -241,6 +253,7 @@ public class AppView {
 
                 inputManual.setText("");
                 inputManual.setEditable(true);
+                loadChoiceBox.setValue(null);
 
             }
         });
