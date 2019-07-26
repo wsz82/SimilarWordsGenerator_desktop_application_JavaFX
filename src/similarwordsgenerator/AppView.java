@@ -181,7 +181,7 @@ public class AppView {
                 inputArea.setText(new File(initParameters.getPath()).getName());
                 path = initParameters.getPath();
 
-                settingOptionsDisibility(false);
+                settingOptionsDisability(false);
             }
         }
 
@@ -264,14 +264,14 @@ public class AppView {
                     input = Arrays.asList(t.split("\n"));
                 }
 
-                settingOptionsDisibility(false);
+                settingOptionsDisability(false);
 
             } else {
 
                 path = null;
                 input = Collections.emptyList();
 
-                settingOptionsDisibility(true);
+                settingOptionsDisability(true);
             }
 
         });
@@ -439,7 +439,7 @@ public class AppView {
         errorStage.show();
     }
 
-    private void settingOptionsDisibility(boolean boo) {
+    private void settingOptionsDisability(boolean boo) {
 
         saveRatiosButton.setDisable(boo);
         levelOfCompression.setDisable(boo);

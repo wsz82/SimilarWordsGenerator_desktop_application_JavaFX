@@ -16,6 +16,9 @@ public class Generator {
         fileFormat(parameters);
 
         Set<String> result;
+        Set<String> resultCheck = new HashSet<>();
+        int checkTime = 200;
+        long time = System.currentTimeMillis();
 
         if (parameters.isSorted()) {
 
@@ -81,11 +84,24 @@ public class Generator {
             if (minWordLength != 0 && tempWord.length() < minWordLength) {
                 continue;
             }
-            if (maxWordLength != 0 && tempWord.length() > maxWordLength) {
+            if (System.currentTimeMillis() - time < checkTime) {
+                if (maxWordLength != 0 && tempWord.length() > maxWordLength) {
 
-                result.add(tempWord.substring(0, maxWordLength - 1));
+                    result.add(tempWord.substring(0, maxWordLength - 1));
 
-            } else result.add(tempWord);
+                } else result.add(tempWord);
+            } else if (System.currentTimeMillis() - time < checkTime*2) {
+
+                if (maxWordLength != 0 && tempWord.length() > maxWordLength) {
+
+                    resultCheck.add(tempWord.substring(0, maxWordLength - 1));
+
+                } else resultCheck.add(tempWord);
+            } else if (!result.containsAll(resultCheck)) {
+                result.addAll(resultCheck);
+                time = System.currentTimeMillis();
+                checkTime *= 2;
+            } else break;
         }
 
         return result;
