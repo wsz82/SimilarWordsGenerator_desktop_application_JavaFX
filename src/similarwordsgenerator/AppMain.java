@@ -27,7 +27,7 @@ public class AppMain extends Application {
 
         String mementoName = "memento";
 
-        similarwordsgenerator.Parameters parameters;
+        Parameters parameters;
         boolean mementoExists = new File(userHomeProgram + File.separator + mementoName).exists();
 
         if (mementoExists) {
@@ -37,7 +37,7 @@ public class AppMain extends Application {
             wordsToSave = memento.getWordsToSave();
 
         } else {
-            parameters = new similarwordsgenerator.Parameters.Builder().build();
+            parameters = new Parameters.Builder().build();
         }
 
         Generator gn = new Generator();

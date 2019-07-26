@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="javafx.graphics">
+    <CLASSES>
+      <root url="jar://C:/javafx-sdk-11.0.2/lib/javafx.graphics.jar!/" />
+      <root url="jar://C:/javafx-sdk-11.0.2/lib/javafx.controls.jar!/" />
+      <root url="jar://C:/javafx-sdk-11.0.2/lib/javafx.base.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
