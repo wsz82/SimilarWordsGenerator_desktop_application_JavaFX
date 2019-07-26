@@ -5,15 +5,15 @@ import java.util.List;
 
 class Memento implements Serializable {
 
-    private Parameters parameters;
+    private ProgramParameters programParameters;
     private List<String> wordsToSave;
 
     Memento() {
     }
 
-    Memento(Parameters parameters, List<String> wordsToSave, File userHomeProgram, String mementoName) {
+    Memento(ProgramParameters programParameters, List<String> wordsToSave, File userHomeProgram, String mementoName) {
 
-        this.parameters = parameters;
+        this.programParameters = programParameters;
         this.wordsToSave = wordsToSave;
 
         try (
@@ -49,8 +49,8 @@ class Memento implements Serializable {
     }
 
 
-    Parameters getParameters() {
-        return parameters;
+    ProgramParameters getProgramParameters() {
+        return programParameters;
     }
 
     List<String> getWordsToSave() {

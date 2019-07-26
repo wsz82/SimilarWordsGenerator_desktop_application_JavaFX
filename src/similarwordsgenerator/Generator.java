@@ -11,31 +11,31 @@ public class Generator {
     public Generator () {
     }
 
-    Set<String> generate(Parameters parameters) throws IOException {
+    Set<String> generate(ProgramParameters programParameters) throws IOException {
 
-        fileFormat(parameters);
+        fileFormat(programParameters);
 
         Set<String> result;
         Set<String> resultCheck = new HashSet<>();
         int checkTime = 200;
         long time = System.currentTimeMillis();
 
-        if (parameters.isSorted()) {
+        if (programParameters.isSorted()) {
 
             result = new TreeSet<>();
 
         } else result = new HashSet<>();
 
-        while ( result.size() < parameters.getNumberOfWords() ) {
+        while ( result.size() < programParameters.getNumberOfWords() ) {
 
             StringBuilder output = new StringBuilder();
             Random r = new Random();
 
-            boolean firstCharAsInInput = parameters.isFirstCharAsInInput();
-            boolean lastCharAsInInput = parameters.isLastCharAsInInput();
+            boolean firstCharAsInInput = programParameters.isFirstCharAsInInput();
+            boolean lastCharAsInInput = programParameters.isLastCharAsInInput();
             int wordLength;
-            int maxWordLength = parameters.getMaxWordLength();
-            int minWordLength = parameters.getMinWordLength();
+            int maxWordLength = programParameters.getMaxWordLength();
+            int minWordLength = programParameters.getMinWordLength();
 
             if ( minWordLength != 0 && maxWordLength != 0 ) {
 
@@ -107,10 +107,10 @@ public class Generator {
         return result;
     }
 
-    private void fileFormat(Parameters parameters) throws IOException {
-        if (parameters.getInput().isEmpty()) {
+    private void fileFormat(ProgramParameters programParameters) throws IOException {
+        if (programParameters.getInput().isEmpty()) {
             try {
-                String path = parameters.getPath();
+                String path = programParameters.getPath();
                 File file = new File(path);
                 if (file.getName().endsWith(".txt")) {
                     this.analyser = new LoaderWords().load(path);
@@ -121,7 +121,7 @@ public class Generator {
                 throw new IOException("Wrong file format.");
             }
         } else {
-            this.analyser = new Analyser(parameters.getInput());
+            this.analyser = new Analyser(programParameters.getInput());
         }
     }
 

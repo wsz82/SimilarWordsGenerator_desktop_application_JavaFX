@@ -57,7 +57,7 @@ class AppView {
         this.gn = gn;
     }
 
-    void init (Stage primaryStage, Parameters initParameters, File userHomeProgram, ISaver saver, SaverWords saverWords, String mementoName, List<String> wordsToSave) {
+    void init (Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, ISaver saver, SaverWords saverWords, String mementoName, List<String> wordsToSave) {
 
         Group root = new Group();
         Scene scene = new Scene(root, 650, 600);
@@ -85,17 +85,17 @@ class AppView {
         loadChoiceBox.setMaxWidth(100);
 
         sorted = new CheckBox("Sort words");
-        sorted.setSelected(initParameters.isSorted());
+        sorted.setSelected(initProgramParameters.isSorted());
         firstChar = new CheckBox("First char as in input");
-        firstChar.setSelected(initParameters.isFirstCharAsInInput());
+        firstChar.setSelected(initProgramParameters.isFirstCharAsInInput());
         lastChar = new CheckBox("Last char as in input");
-        lastChar.setSelected(initParameters.isLastCharAsInInput());
+        lastChar.setSelected(initProgramParameters.isLastCharAsInInput());
 
-        numberOfWords = new TextField(Integer.toString(initParameters.getNumberOfWords()));
+        numberOfWords = new TextField(Integer.toString(initProgramParameters.getNumberOfWords()));
         final Label numberOfWordsLabel = new Label("Number of words:");
-        minWordLength = minMaxTextFields(initParameters.getMinWordLength());
+        minWordLength = minMaxTextFields(initProgramParameters.getMinWordLength());
         final Label minWordLengthLabel = new Label("Min. word length:");
-        maxWordLength = minMaxTextFields(initParameters.getMaxWordLength());
+        maxWordLength = minMaxTextFields(initProgramParameters.getMaxWordLength());
         final Label maxWordLengthLabel = new Label("Max. word length:");
         levelOfCompression = new TextField();
         levelOfCompression.setDisable(true);
@@ -151,17 +151,17 @@ class AppView {
                 new FileChooser.ExtensionFilter("Ratios", "*.bin"));
 
         primaryStage.setOnCloseRequest(event -> {
-            Parameters parametersToSave = settingParameters();
-            new Memento(parametersToSave, this.output, userHomeProgram, mementoName);
+            ProgramParameters programParametersToSave = settingParameters();
+            new Memento(programParametersToSave, this.output, userHomeProgram, mementoName);
         });
 
-        if (initParameters.getInput() != null && !initParameters.getInput().isEmpty()) {
+        if (initProgramParameters.getInput() != null && !initProgramParameters.getInput().isEmpty()) {
 
-            for (String word : initParameters.getInput()) {
+            for (String word : initProgramParameters.getInput()) {
                 inputArea.setText(inputArea.getText() + (word + "\n"));
             }
 
-            input = initParameters.getInput();
+            input = initProgramParameters.getInput();
         }
 
         if (wordsToSave != null && !wordsToSave.isEmpty()) {
@@ -172,14 +172,14 @@ class AppView {
             saveWordsButton.setDisable(false);
         }
 
-        if (initParameters.getPath() != null) {
+        if (initProgramParameters.getPath() != null) {
 
-            boolean fileExists = new File (initParameters.getPath()).exists();
+            boolean fileExists = new File (initProgramParameters.getPath()).exists();
 
             if (fileExists) {
 
-                inputArea.setText(new File(initParameters.getPath()).getName());
-                path = initParameters.getPath();
+                inputArea.setText(new File(initProgramParameters.getPath()).getName());
+                path = initProgramParameters.getPath();
 
                 settingOptionsDisability(false);
             }
@@ -298,7 +298,7 @@ class AppView {
 
         generateButton.setOnAction(f -> {
 
-            Parameters parameters = settingParameters();
+            ProgramParameters programParameters = settingParameters();
 
             try {
 
@@ -307,7 +307,7 @@ class AppView {
 
                 try {
                     //Generating new words
-                    this.output.addAll(gn.generate(parameters));
+                    this.output.addAll(gn.generate(programParameters));
                 } catch (NullPointerException en) {
                     //If no file is loaded so program asks us to load a file
                     loadButton.fire();
@@ -447,9 +447,9 @@ class AppView {
         compressButton.setDisable(boo);
     }
 
-    private Parameters settingParameters() {
+    private ProgramParameters settingParameters() {
 
-        Parameters.Builder parametersBuilder = new Parameters.Builder();
+        ProgramParameters.Builder parametersBuilder = new ProgramParameters.Builder();
 
         parametersBuilder.setNumberOfWords(Integer.parseInt(numberOfWords.getText()));
         try {

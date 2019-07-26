@@ -27,17 +27,17 @@ public class AppMain extends Application {
 
         String mementoName = "memento";
 
-        Parameters parameters;
+        ProgramParameters parameters;
         boolean mementoExists = new File(userHomeProgram + File.separator + mementoName).exists();
 
         if (mementoExists) {
 
             Memento memento = Memento.loadMemento(userHomeProgram, mementoName);
-            parameters = memento.getParameters();
+            parameters = memento.getProgramParameters();
             wordsToSave = memento.getWordsToSave();
 
         } else {
-            parameters = new Parameters.Builder().build();
+            parameters = new ProgramParameters.Builder().build();
         }
 
         Generator gn = new Generator();

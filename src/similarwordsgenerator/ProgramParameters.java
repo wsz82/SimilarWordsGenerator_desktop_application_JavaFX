@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public final class Parameters implements Serializable {
+public final class ProgramParameters implements Serializable {
 
     private final List<String> input;
     private final boolean sorted;
@@ -15,7 +15,7 @@ public final class Parameters implements Serializable {
     private final int maxWordLength;
     private final String path;
 
-    private Parameters(Builder builder) {
+    private ProgramParameters(Builder builder) {
         this.input = builder.input;
         this.sorted = builder.sorted;
         this.firstCharAsInInput = builder.firstCharAsInInput;
@@ -109,8 +109,8 @@ public final class Parameters implements Serializable {
             return this;
         }
 
-        public Parameters build() {
-            return new Parameters(this);
+        public ProgramParameters build() {
+            return new ProgramParameters(this);
         }
     }
 }
