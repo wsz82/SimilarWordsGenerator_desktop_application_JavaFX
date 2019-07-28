@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Similar Words Generator.iml" filepath="$PROJECT_DIR$/Similar Words Generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Similar Words Generator.iml" filepath="$PROJECT_DIR$/.idea/Similar Words Generator.iml" />
     </modules>
   </component>
 </project>
