@@ -1,4 +1,6 @@
-package similarwordsgenerator;
+package similarwordsgenerator.application;
+
+import similarwordsgenerator.model.ProgramParameters;
 
 import java.io.*;
 import java.util.List;
@@ -6,15 +8,15 @@ import java.util.List;
 class Memento implements Serializable {
 
     private ProgramParameters programParameters;
-    private List<String> wordsToSave;
+    private List<String> output;
 
     Memento() {
     }
 
-    Memento(ProgramParameters programParameters, List<String> wordsToSave, File userHomeProgram, String mementoName) {
+    Memento(ProgramParameters programParameters, List<String> output, File userHomeProgram, String mementoName) {
 
         this.programParameters = programParameters;
-        this.wordsToSave = wordsToSave;
+        this.output = output;
 
         try (
 
@@ -48,12 +50,11 @@ class Memento implements Serializable {
         return memento;
     }
 
-
     ProgramParameters getProgramParameters() {
         return programParameters;
     }
 
-    List<String> getWordsToSave() {
-        return wordsToSave;
+    List<String> getOutput() {
+        return output;
     }
 }

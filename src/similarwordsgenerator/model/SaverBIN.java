@@ -1,14 +1,13 @@
-package similarwordsgenerator;
+package similarwordsgenerator.model;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-public class SaverBIN implements ISaver {
+class SaverBIN {
 
-    @Override
-    public void save(Analyser analyser, String path) {
+    void save(Analyser analyser, String path) {
 
         try (
 

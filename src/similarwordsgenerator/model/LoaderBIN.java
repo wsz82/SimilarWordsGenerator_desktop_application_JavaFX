@@ -1,13 +1,13 @@
-package similarwordsgenerator;
+package similarwordsgenerator.model;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-public class LoaderBIN implements ILoader {
+class LoaderBIN extends ALoader {
 
     @Override
-    public Analyser load(String path) {
+    Analyser load(String path) {
 
         Analyser analyser = new Analyser();
 

@@ -1,13 +1,12 @@
-package similarwordsgenerator;
+package similarwordsgenerator.model;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Set;
 
-public class SaverWords {
+class WordsExport {
 
-    public void save(List<String> listOfWords, String path) {
+    void export(List<String> listOfWords, String path) {
 
         try (
 

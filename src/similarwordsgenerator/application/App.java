@@ -1,25 +1,28 @@
-package similarwordsgenerator;
+package similarwordsgenerator.application;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import similarwordsgenerator.model.Controller;
+import similarwordsgenerator.model.IController;
+import similarwordsgenerator.model.ProgramParameters;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
-public class AppMain extends Application {
+public class App extends Application {
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    private ISaver saver = new SaverBIN();
-    private SaverWords saverWords = new SaverWords();
-
-    private List<String> wordsToSave;
-
     @Override
     public void start(Stage primaryStage) {
 
+        IController controller = new Controller();
+        View view = new View();
+
+        List<String> output = new ArrayList<>();
         File userHomeProgram;
         String path = System.getProperty("user.home") + File.separator + ".similarwordsgenerator";
         new File(path).mkdir();
@@ -34,14 +37,12 @@ public class AppMain extends Application {
 
             Memento memento = Memento.loadMemento(userHomeProgram, mementoName);
             parameters = memento.getProgramParameters();
-            wordsToSave = memento.getWordsToSave();
+            output = memento.getOutput();
 
         } else {
             parameters = new ProgramParameters.Builder().build();
         }
 
-        Generator gn = new Generator();
-        AppView view = new AppView(gn);
-        view.init(primaryStage, parameters, userHomeProgram, saver, saverWords, mementoName, wordsToSave);
+        view.init(controller, primaryStage, parameters, userHomeProgram, mementoName, output);
     }
 }

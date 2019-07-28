@@ -1,4 +1,4 @@
-package similarwordsgenerator;
+package similarwordsgenerator.model;
 
 import java.io.Serializable;
 import java.util.Collections;

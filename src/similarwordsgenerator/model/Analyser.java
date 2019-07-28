@@ -1,11 +1,11 @@
-package similarwordsgenerator;
+package similarwordsgenerator.model;
 
 import java.io.Serializable;
 import java.util.*;
 
 class Analyser implements Serializable{
 
-    private List<Integer> wordLengths;  //random length is weight average distribution
+    private List<Integer> wordsLengths;     //random length is weight average distribution
     private List<Character> firstChars;
     private List<Character> lastChars;
     private Map<Character, ArrayList<Character>> charsCount;
@@ -15,7 +15,7 @@ class Analyser implements Serializable{
 
     Analyser (List<String> input) {
 
-        List<Integer> wordLengths = new ArrayList<>();
+        List<Integer> wordsLengths = new ArrayList<>();
         List<Character> firstChars = new ArrayList<>();
         List<Character> lastChars = new ArrayList<>();
         Map<Character, ArrayList<Character>> charsCount = new HashMap<>();
@@ -26,9 +26,9 @@ class Analyser implements Serializable{
                 continue;
             }
 
-            char[] tempWord = word.toCharArray();             //lower case should be optional
+            char[] tempWord = word.toCharArray();
 
-            wordLengths.add(word.length());
+            wordsLengths.add(word.length());
             firstChars.add(tempWord[0]);
             lastChars.add(tempWord[tempWord.length - 1]);
 
@@ -44,7 +44,7 @@ class Analyser implements Serializable{
                 }
             }
         }
-        this.wordLengths = wordLengths;
+        this.wordsLengths = wordsLengths;
         this.firstChars = firstChars;
         this.lastChars = lastChars;
         this.charsCount = charsCount;
@@ -99,18 +99,18 @@ class Analyser implements Serializable{
             this.firstChars = tempFirstChars;
         }
 
-        if (this.wordLengths.size() > compressionLevel) {
+        if (this.wordsLengths.size() > compressionLevel) {
 
-            Set<Integer> uniWordLenghts = new HashSet<>(this.wordLengths);
+            Set<Integer> uniWordLenghts = new HashSet<>(this.wordsLengths);
             List<Integer> tempWordLengths = new ArrayList<>();
 
             for (Integer i : uniWordLenghts) {
 
-                long sum = this.wordLengths.stream()
+                long sum = this.wordsLengths.stream()
                         .filter(g -> g.equals(i))
                         .count();
 
-                int count = (int) sum * compressionLevel / this.wordLengths.size();
+                int count = (int) sum * compressionLevel / this.wordsLengths.size();
 
                 for (int j = 0; j < count; j++) {
 
@@ -123,7 +123,7 @@ class Analyser implements Serializable{
                 int tempInteger = 0;
                 int temp = 0;
 
-                List<Integer> tempStream = new ArrayList<>(getWordLengths());
+                List<Integer> tempStream = new ArrayList<>(getWordsLengths());
                 tempStream.removeAll(tempWordLengths);
 
                 for (Integer i : tempStream) {
@@ -141,7 +141,7 @@ class Analyser implements Serializable{
                 tempWordLengths.add(tempInteger);
             }
 
-            this.wordLengths = tempWordLengths;
+            this.wordsLengths = tempWordLengths;
         }
 
 
@@ -202,35 +202,19 @@ class Analyser implements Serializable{
         this.charsCount = charsCount;
     }
 
-    List<Integer> getWordLengths() {
-        return wordLengths;
-    }
-
-    void setWordLengths(List<Integer> wordLengths) {
-        this.wordLengths = wordLengths;
+    List<Integer> getWordsLengths() {
+        return wordsLengths;
     }
 
     List<Character> getFirstChars() {
         return firstChars;
     }
 
-    void setFirstChars(List<Character> firstChars) {
-        this.firstChars = firstChars;
-    }
-
     List<Character> getLastChars() {
         return lastChars;
     }
 
-    void setLastChars(List<Character> lastChars) {
-        this.lastChars = lastChars;
-    }
-
     Map<Character, ArrayList<Character>> getCharsCount() {
         return charsCount;
-    }
-
-    void setCharsCount(Map<Character, ArrayList<Character>> charsCount) {
-        this.charsCount = charsCount;
     }
 }

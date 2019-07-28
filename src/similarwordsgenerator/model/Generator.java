@@ -1,14 +1,14 @@
-package similarwordsgenerator;
+package similarwordsgenerator.model;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class Generator {
+class Generator {
 
     private Analyser analyser;
 
-    public Generator () {
+    Generator () {
     }
 
     Set<String> generate(ProgramParameters programParameters) throws IOException {
@@ -41,7 +41,7 @@ public class Generator {
 
                 wordLength = r.nextInt((maxWordLength - minWordLength) + 1) + minWordLength;
 
-            } else wordLength = analyser.getWordLengths().get(r.nextInt(analyser.getWordLengths().toArray().length));
+            } else wordLength = analyser.getWordsLengths().get(r.nextInt(analyser.getWordsLengths().toArray().length));
 
             if ( firstCharAsInInput ) {
 
@@ -125,7 +125,7 @@ public class Generator {
         }
     }
 
-    public Analyser getAnalyser() {
+    Analyser getAnalyser() {
         return analyser;
     }
 }

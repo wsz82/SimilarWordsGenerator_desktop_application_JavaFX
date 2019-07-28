@@ -1,4 +1,4 @@
-package similarwordsgenerator;
+package similarwordsgenerator.model;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -8,10 +8,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoaderWords implements ILoader{
+class LoaderWords extends ALoader{
 
     @Override
-    public Analyser load (String path) {
+    Analyser load (String path) {
 
         List<String> loadList = new ArrayList<>();
 

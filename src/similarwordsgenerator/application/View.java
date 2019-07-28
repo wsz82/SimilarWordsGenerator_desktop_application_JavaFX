@@ -1,4 +1,4 @@
-package similarwordsgenerator;
+package similarwordsgenerator.application;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,6 +21,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import similarwordsgenerator.model.IController;
+import similarwordsgenerator.model.ProgramParameters;
 
 import java.awt.*;
 import java.io.File;
@@ -33,10 +35,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class AppView {
+class View {
 
-    private final Generator gn;
-
+    private TextArea inputArea;
+    private TextArea outputArea;
     private CheckBox sorted;
     private CheckBox firstChar;
     private CheckBox lastChar;
@@ -53,36 +55,22 @@ class AppView {
     private List<String> output = new ArrayList<>();
     private List<String> input = new ArrayList<>();
 
-    AppView(Generator gn) {
-        this.gn = gn;
-    }
-
-    void init (Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, ISaver saver, SaverWords saverWords, String mementoName, List<String> wordsToSave) {
+    void init (IController controller, Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, String mementoName, List<String> output) {
 
         Group root = new Group();
         Scene scene = new Scene(root, 650, 600);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Similar Words Generator");
 
-        final FileChooser fcLoad = new FileChooser();
-        fcLoad.setInitialDirectory(userHomeProgram);
-        final FileChooser fcSaveRatios = new FileChooser();
-        fcSaveRatios.setInitialDirectory(userHomeProgram);
-        final FileChooser fcSaveWords = new FileChooser();
-        fcSaveWords.setInitialDirectory(userHomeProgram);
+        inputArea = new TextArea();
+        inputArea.setPromptText("Please choose a file with words in .txt or .csv format separated by newline.");
+        inputArea.setPrefSize(150,500);
+        Label inputManualLabel = new Label("Input");
 
-        final Button loadButton = new Button("Load");
-        final Button generateButton = new Button("Generate");
-        saveRatiosButton = new Button("Save ratios");
-        saveRatiosButton.setDisable(true);
-        saveWordsButton = new Button("Save words");
-        saveWordsButton.setDisable(true);
-        compressButton = new Button("Compress");
-        compressButton.setDisable(true);
-
-        final ChoiceBox<String> loadChoiceBox = new ChoiceBox<>();
-        loadChoiceBox.setMinWidth(100);
-        loadChoiceBox.setMaxWidth(100);
+        outputArea = new TextArea();
+        outputArea.setPrefSize(150,500);
+        outputArea.setEditable(false);
+        Label outputLabel = new Label("Output");
 
         sorted = new CheckBox("Sort words");
         sorted.setSelected(initProgramParameters.isSorted());
@@ -92,28 +80,37 @@ class AppView {
         lastChar.setSelected(initProgramParameters.isLastCharAsInInput());
 
         numberOfWords = new TextField(Integer.toString(initProgramParameters.getNumberOfWords()));
-        final Label numberOfWordsLabel = new Label("Number of words:");
+        Label numberOfWordsLabel = new Label("Number of words:");
         minWordLength = minMaxTextFields(initProgramParameters.getMinWordLength());
-        final Label minWordLengthLabel = new Label("Min. word length:");
+        Label minWordLengthLabel = new Label("Min. word length:");
         maxWordLength = minMaxTextFields(initProgramParameters.getMaxWordLength());
-        final Label maxWordLengthLabel = new Label("Max. word length:");
+        Label maxWordLengthLabel = new Label("Max. word length:");
         levelOfCompression = new TextField();
         levelOfCompression.setDisable(true);
         levelOfCompressionLabel = new Label("Level of compression:");
         levelOfCompressionLabel.setDisable(true);
 
-        final Label optionsLabel = new Label("Options");
+        Button loadButton = new Button("Load");
+        Button generateButton = new Button("Generate");
+        saveRatiosButton = new Button("Save ratios");
+        saveRatiosButton.setDisable(true);
+        saveWordsButton = new Button("Save words");
+        saveWordsButton.setDisable(true);
+        compressButton = new Button("Compress");
+        compressButton.setDisable(true);
 
+        ChoiceBox<String> loadChoiceBox = new ChoiceBox<>();
+        loadChoiceBox.setMinWidth(100);
+        loadChoiceBox.setMaxWidth(100);
 
-        TextArea inputArea = new TextArea();
-        inputArea.setPrefSize(150,500);
-        final Label inputManualLabel = new Label("Input");
+        FileChooser fcLoad = new FileChooser();
+        fcLoad.setInitialDirectory(userHomeProgram);
+        FileChooser fcSaveRatios = new FileChooser();
+        fcSaveRatios.setInitialDirectory(userHomeProgram);
+        FileChooser fcSaveWords = new FileChooser();
+        fcSaveWords.setInitialDirectory(userHomeProgram);
 
-        TextArea outputArea = new TextArea();
-        outputArea.setPrefSize(150,500);
-        outputArea.setEditable(false);
-        final Label outputLabel = new Label("Output");
-
+        Label optionsLabel = new Label("Options");
 
         numberOfWords.setMaxWidth(50);
         numberOfWords.setTextFormatter(new TextFormatter<>(this::filterForNumbersOfWords));
@@ -123,16 +120,6 @@ class AppView {
 
         maxWordLength.setMaxWidth(50);
         maxWordLength.setTextFormatter(new TextFormatter<>(this::filterForMaxWordLength));
-        maxWordLength.focusedProperty().addListener((ov, old_val, new_val) -> {
-                    try {
-                        if (!new_val && !minWordLength.getText().isEmpty() && (Integer.parseInt(maxWordLength.getText()) < Integer.parseInt(minWordLength.getText()))) {
-                            maxWordLength.setText("");
-                        }
-                    } catch (NumberFormatException e) {
-                        maxWordLength.setText("");
-                    }
-                }
-        );
 
         levelOfCompression.setMaxWidth(50);
         levelOfCompression.setTextFormatter(new TextFormatter<>(this::filterForLevelOfCompression));
@@ -150,221 +137,7 @@ class AppView {
                 new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"),
                 new FileChooser.ExtensionFilter("Ratios", "*.bin"));
 
-        primaryStage.setOnCloseRequest(event -> {
-            ProgramParameters programParametersToSave = settingParameters();
-            new Memento(programParametersToSave, this.output, userHomeProgram, mementoName);
-        });
-
-        if (initProgramParameters.getInput() != null && !initProgramParameters.getInput().isEmpty()) {
-
-            for (String word : initProgramParameters.getInput()) {
-                inputArea.setText(inputArea.getText() + (word + "\n"));
-            }
-
-            input = initProgramParameters.getInput();
-        }
-
-        if (wordsToSave != null && !wordsToSave.isEmpty()) {
-            for (String word : wordsToSave) {
-                outputArea.setText(outputArea.getText() + (word + "\n"));
-            }
-
-            saveWordsButton.setDisable(false);
-        }
-
-        if (initProgramParameters.getPath() != null) {
-
-            boolean fileExists = new File (initProgramParameters.getPath()).exists();
-
-            if (fileExists) {
-
-                inputArea.setText(new File(initProgramParameters.getPath()).getName());
-                path = initProgramParameters.getPath();
-
-                settingOptionsDisability(false);
-            }
-        }
-
-        loadChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-
-                path = userHomeProgram + File.separator + newValue;
-                input = Collections.emptyList();
-                inputArea.setText(newValue);
-                inputArea.setEditable(false);
-
-            }
-        });
-
-        loadChoiceBox.setOnMouseEntered(event -> {
-
-            List<String> ratiosFiles = new ArrayList<>();
-
-            try (
-                    Stream<Path> walk = Files.walk(Paths.get(userHomeProgram.getPath()))
-
-                    ) {
-
-                ratiosFiles = walk
-                        .map(e -> e.getFileName().toString())
-                        .filter(e -> e.endsWith(".bin"))
-                        .collect(Collectors.toList());
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            ObservableList<String> ratiosFilesOb = FXCollections.observableArrayList(ratiosFiles);
-
-            if (loadChoiceBox.getItems().isEmpty()) {
-                loadChoiceBox.setItems(ratiosFilesOb);
-            }
-            else {
-                loadChoiceBox.setOnMouseClicked(nextEvent -> loadChoiceBox.setItems(ratiosFilesOb));
-            }
-        });
-
-        loadButton.setOnAction(f -> {
-            File file = fcLoad.showOpenDialog(primaryStage);
-
-            if (file != null) {
-                path = file.getPath();
-                inputArea.setText(file.getName());
-                inputArea.setEditable(false);
-                input = Collections.emptyList();
-                loadChoiceBox.setValue(null);
-            }
-        });
-
-        inputArea.setTextFormatter(new TextFormatter<>(f -> {
-            if (inputArea.getText().endsWith("\n\n")) {
-
-                f.setText("");
-            }
-            return f;
-        }));
-
-        inputArea.setOnMouseClicked(mouseEvent -> {
-            if ( !inputArea.getText().isEmpty() && path != null && inputArea.getText().equals(new File(path).getName()) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
-
-                path = null;
-                input = Collections.emptyList();
-
-                inputArea.setText("");
-                inputArea.setEditable(true);
-                loadChoiceBox.setValue(null);
-
-            }
-        });
-
-        inputArea.textProperty().addListener((ov, s, t) -> {
-            if (!t.isEmpty()) {
-
-                if (path == null) {
-                    input = Arrays.asList(t.split("\n"));
-                }
-
-                settingOptionsDisability(false);
-
-            } else {
-
-                path = null;
-                input = Collections.emptyList();
-
-                settingOptionsDisability(true);
-            }
-
-        });
-
-        outputArea.textProperty().addListener((observableValue, s, t1) -> {
-            if (!outputArea.getText().isEmpty()) {
-                saveWordsButton.setDisable(false);
-            } else {
-                saveWordsButton.setDisable(true);
-            }
-        });
-
-        saveRatiosButton.setOnAction(e -> {
-            File file = fcSaveRatios.showSaveDialog(primaryStage);
-            if (file != null) saver.save(gn.getAnalyser(), file.getPath());
-        });
-
-        saveWordsButton.setOnAction(e -> {
-            File file = fcSaveWords.showSaveDialog(primaryStage);
-            if (file != null) {
-                saverWords.save(this.output, file.getPath());
-            }
-        });
-
-        generateButton.setOnAction(f -> {
-
-            ProgramParameters programParameters = settingParameters();
-
-            try {
-
-                //Clearing output for new words
-                this.output.removeAll(this.output);
-
-                try {
-                    //Generating new words
-                    this.output.addAll(gn.generate(programParameters));
-                } catch (NullPointerException en) {
-                    //If no file is loaded so program asks us to load a file
-                    loadButton.fire();
-                }
-
-                //Emptying output area for new words
-                outputArea.setText("");
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                //Error message if input is wrong
-                errorInput();
-            }
-
-            for (String word : this.output) {
-                outputArea.setText(outputArea.getText() + (word + "\n"));
-            }
-        });
-
-        compressButton.setOnAction(e -> {
-
-            int levelOfCompressionValue = 0;
-
-            try {
-                levelOfCompressionValue = Integer.parseInt(levelOfCompression.getText());
-            } catch (NumberFormatException en) {
-                levelOfCompression.requestFocus();
-            }
-
-            if (levelOfCompressionValue > 0) {
-                try {
-                    gn.getAnalyser().compress(levelOfCompressionValue);
-                } catch (NullPointerException en) {
-                    loadButton.fire();
-                }
-            }
-        });
-
-        sorted.selectedProperty().addListener((ov, old_val, new_val) -> {
-
-            Set<String> words;
-            List<String> wordsFromOutput = Arrays.asList(outputArea.getText().split("\n"));
-            outputArea.setText("");
-
-            if (new_val) {
-                words = new TreeSet<>(wordsFromOutput);
-            } else {
-                words = new HashSet<>(wordsFromOutput);
-            }
-
-            output = new ArrayList<>(words);
-
-            for (String word : words) {
-                outputArea.setText(outputArea.getText() + (word + "\n"));
-            }
-        });
+        checkMemento(initProgramParameters, output);
 
         final HBox loadBox = new HBox();
         loadBox.getChildren().addAll(loadButton, loadChoiceBox);
@@ -413,6 +186,241 @@ class AppView {
         root.getChildren().addAll(hp);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        inputArea.setTextFormatter(new TextFormatter<>(f -> {
+            if (inputArea.getText().endsWith("\n\n")) {
+
+                f.setText("");
+            }
+            return f;
+        }));
+
+        inputArea.setOnMouseClicked(mouseEvent -> {
+            if ( !inputArea.getText().isEmpty() && path != null && inputArea.getText().equals(new File(path).getName()) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
+
+                path = null;
+                input = Collections.emptyList();
+
+                inputArea.setText("");
+                inputArea.setEditable(true);
+                loadChoiceBox.setValue(null);
+            }
+        });
+
+        inputArea.textProperty().addListener((ov, s, t) -> {
+            if (!t.isEmpty()) {
+
+                //Case of providing input manually
+                if (path == null) {
+                    input = Arrays.asList(t.split("\n"));
+                }
+
+                settingOptionsDisability(false);
+
+            } else {
+
+                //Clearing input variables when there is no pointer for them
+                path = null;
+                input = Collections.emptyList();
+
+                settingOptionsDisability(true);
+            }
+
+        });
+
+        outputArea.textProperty().addListener((observableValue, s, t1) -> {
+            if (!outputArea.getText().isEmpty()) {
+                saveWordsButton.setDisable(false);
+            } else {
+                saveWordsButton.setDisable(true);
+            }
+        });
+
+        sorted.selectedProperty().addListener((ov, old_val, new_val) -> {
+
+            Set<String> words;
+            List<String> wordsFromOutput = Arrays.asList(outputArea.getText().split("\n"));
+            outputArea.setText("");
+
+            if (new_val) {
+                words = new TreeSet<>(wordsFromOutput);
+            } else {
+                words = new HashSet<>(wordsFromOutput);
+            }
+
+            this.output = new ArrayList<>(words);
+
+            for (String word : words) {
+                outputArea.setText(outputArea.getText() + (word + "\n"));
+            }
+        });
+
+        maxWordLength.focusedProperty().addListener((ov, old_val, new_val) -> {
+            try {
+                if (!new_val && !minWordLength.getText().isEmpty() && (Integer.parseInt(maxWordLength.getText()) < Integer.parseInt(minWordLength.getText()))) {
+                    maxWordLength.setText("");
+                }
+            } catch (NumberFormatException e) {
+                maxWordLength.setText("");
+            }
+        });
+
+        loadButton.setOnAction(f -> {
+            File file = fcLoad.showOpenDialog(primaryStage);
+
+            if (file != null) {
+
+                path = file.getPath();
+                input = Collections.emptyList();
+
+                inputArea.setText(file.getName());
+                inputArea.setEditable(false);
+                loadChoiceBox.setValue(null);
+            }
+        });
+
+        generateButton.setOnAction(f -> {
+            ProgramParameters programParameters = settingParameters();
+
+            try {
+
+                //Clearing output for new words
+                this.output.removeAll(this.output);
+
+                try {
+                    //Generating new words
+                    this.output.addAll(controller.generate(programParameters));
+                } catch (NullPointerException en) {
+                    //If no file is loaded so program asks us to load it
+                    loadButton.fire();
+                }
+
+                //Emptying output area for new words
+                if (path != null || (input != null && !input.isEmpty())) {
+                    outputArea.setText("");
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                //Error message if input is wrong
+                errorInput();
+            }
+
+            for (String word : this.output) {
+                outputArea.setText(outputArea.getText() + (word + "\n"));
+            }
+        });
+
+        saveRatiosButton.setOnAction(e -> {
+            File file = fcSaveRatios.showSaveDialog(primaryStage);
+            if (file != null) controller.save(controller.getAnalyser(), file.getPath());
+        });
+
+        saveWordsButton.setOnAction(e -> {
+            File file = fcSaveWords.showSaveDialog(primaryStage);
+            if (file != null) {
+                controller.export(this.output, file.getPath());
+            }
+        });
+
+        compressButton.setOnAction(e -> {
+
+            int levelOfCompressionValue = 0;
+
+            try {
+                levelOfCompressionValue = Integer.parseInt(levelOfCompression.getText());
+            } catch (NumberFormatException en) {
+                levelOfCompression.requestFocus();
+            }
+
+            if (levelOfCompressionValue > 0) {
+                try {
+                    controller.compress(levelOfCompressionValue);
+                } catch (NullPointerException en) {
+                    loadButton.fire();
+                }
+            }
+        });
+
+        loadChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+
+                path = userHomeProgram + File.separator + newValue;
+                input = Collections.emptyList();
+
+                inputArea.setText(newValue);
+                inputArea.setEditable(false);
+
+            }
+        });
+
+        loadChoiceBox.setOnMouseEntered(event -> {
+
+            List<String> ratiosFiles = new ArrayList<>();
+
+            try (
+                    Stream<Path> walk = Files.walk(Paths.get(userHomeProgram.getPath()))
+
+            ) {
+
+                ratiosFiles = walk
+                        .map(e -> e.getFileName().toString())
+                        .filter(e -> e.endsWith(".bin"))
+                        .collect(Collectors.toList());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            ObservableList<String> ratiosFilesOb = FXCollections.observableArrayList(ratiosFiles);
+
+            if (loadChoiceBox.getItems().isEmpty()) {
+                loadChoiceBox.setItems(ratiosFilesOb);
+            }
+            else {
+                loadChoiceBox.setOnMouseClicked(nextEvent -> loadChoiceBox.setItems(ratiosFilesOb));
+            }
+        });
+
+
+
+        primaryStage.setOnCloseRequest(event -> {
+            ProgramParameters programParametersToSave = settingParameters();
+            new Memento(programParametersToSave, this.output, userHomeProgram, mementoName);
+        });
+    }
+
+    private void checkMemento(ProgramParameters initProgramParameters, List<String> output) {
+        if (initProgramParameters.getInput() != null && !initProgramParameters.getInput().isEmpty()) {
+
+            for (String word : initProgramParameters.getInput()) {
+                inputArea.setText(inputArea.getText() + (word + "\n"));
+            }
+
+            input = initProgramParameters.getInput();
+        }
+
+        if (output != null && !output.isEmpty()) {
+            for (String word : output) {
+                outputArea.setText(outputArea.getText() + (word + "\n"));
+            }
+
+            saveWordsButton.setDisable(false);
+        }
+
+        if (initProgramParameters.getPath() != null) {
+
+            boolean fileExists = new File(initProgramParameters.getPath()).exists();
+
+            if (fileExists) {
+
+                inputArea.setText(new File(initProgramParameters.getPath()).getName());
+                path = initProgramParameters.getPath();
+
+                settingOptionsDisability(false);
+            }
+        }
     }
 
     private void errorInput() {
