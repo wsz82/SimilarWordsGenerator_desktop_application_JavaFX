@@ -47,8 +47,8 @@ class View {
     private TextField maxWordLength;
     private TextField levelOfCompression;
     private Label levelOfCompressionLabel;
-    private Button saveRatiosButton;
-    private Button saveWordsButton;
+    private Button saveSeedButton;
+    private Button exportWordsButton;
     private Button compressButton;
 
     private String path = null;
@@ -63,7 +63,7 @@ class View {
         primaryStage.setTitle("Similar Words Generator");
 
         inputArea = new TextArea();
-        inputArea.setPromptText("Please choose a file with words in .txt or .csv format separated by newline.");
+        inputArea.setPromptText("Please choose a file with words in .txt or .csv format separated by newline. Eventually choose a seed (.bin created in this program)");
         inputArea.setPrefSize(150,500);
         Label inputManualLabel = new Label("Input");
 
@@ -74,9 +74,9 @@ class View {
 
         sorted = new CheckBox("Sort words");
         sorted.setSelected(initProgramParameters.isSorted());
-        firstChar = new CheckBox("First char as in input");
+        firstChar = new CheckBox("First sign as in input");
         firstChar.setSelected(initProgramParameters.isFirstCharAsInInput());
-        lastChar = new CheckBox("Last char as in input");
+        lastChar = new CheckBox("Last sign as in input");
         lastChar.setSelected(initProgramParameters.isLastCharAsInInput());
 
         numberOfWords = new TextField(Integer.toString(initProgramParameters.getNumberOfWords()));
@@ -92,10 +92,10 @@ class View {
 
         Button loadButton = new Button("Load");
         Button generateButton = new Button("Generate");
-        saveRatiosButton = new Button("Save ratios");
-        saveRatiosButton.setDisable(true);
-        saveWordsButton = new Button("Save words");
-        saveWordsButton.setDisable(true);
+        saveSeedButton = new Button("Save seed");
+        saveSeedButton.setDisable(true);
+        exportWordsButton = new Button("Export words");
+        exportWordsButton.setDisable(true);
         compressButton = new Button("Compress");
         compressButton.setDisable(true);
 
@@ -105,10 +105,10 @@ class View {
 
         FileChooser fcLoad = new FileChooser();
         fcLoad.setInitialDirectory(userHomeProgram);
-        FileChooser fcSaveRatios = new FileChooser();
-        fcSaveRatios.setInitialDirectory(userHomeProgram);
-        FileChooser fcSaveWords = new FileChooser();
-        fcSaveWords.setInitialDirectory(userHomeProgram);
+        FileChooser fcSaveSeed = new FileChooser();
+        fcSaveSeed.setInitialDirectory(userHomeProgram);
+        FileChooser fcExportWords = new FileChooser();
+        fcExportWords.setInitialDirectory(userHomeProgram);
 
         Label optionsLabel = new Label("Options");
 
@@ -124,18 +124,18 @@ class View {
         levelOfCompression.setMaxWidth(50);
         levelOfCompression.setTextFormatter(new TextFormatter<>(this::filterForLevelOfCompression));
 
-        fcSaveRatios.setTitle("Save ratios to a file");
-        fcSaveRatios.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Ratios", "*.bin"));
+        fcSaveSeed.setTitle("Save seed to a file");
+        fcSaveSeed.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Seed", "*.bin"));
 
-        fcSaveWords.setTitle("Save words to a file");
-        fcSaveWords.getExtensionFilters().add(
+        fcExportWords.setTitle("Save words to a file");
+        fcExportWords.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"));
 
-        fcLoad.setTitle("Load a text or ratios file");
+        fcLoad.setTitle("Load a text or seed file");
         fcLoad.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"),
-                new FileChooser.ExtensionFilter("Ratios", "*.bin"));
+                new FileChooser.ExtensionFilter("Seed", "*.bin"));
 
         checkMemento(initProgramParameters, output);
 
@@ -158,11 +158,11 @@ class View {
         GridPane.setConstraints(levelOfCompressionLabel, 0,8);
         GridPane.setConstraints(levelOfCompression, 1,8);
         GridPane.setConstraints(compressButton, 0,9);
-        GridPane.setConstraints(saveRatiosButton, 0,10);
-        GridPane.setConstraints(saveWordsButton, 0,11);
+        GridPane.setConstraints(saveSeedButton, 0,10);
+        GridPane.setConstraints(exportWordsButton, 0,11);
         options.setHgap(6);
         options.setVgap(6);
-        options.getChildren().addAll(loadBox, generateButton, saveRatiosButton, sorted, firstChar, lastChar, numberOfWords, numberOfWordsLabel, minWordLength, minWordLengthLabel, maxWordLength, maxWordLengthLabel, saveWordsButton, levelOfCompressionLabel, levelOfCompression, compressButton);
+        options.getChildren().addAll(loadBox, generateButton, saveSeedButton, sorted, firstChar, lastChar, numberOfWords, numberOfWordsLabel, minWordLength, minWordLengthLabel, maxWordLength, maxWordLengthLabel, exportWordsButton, levelOfCompressionLabel, levelOfCompression, compressButton);
 
         final VBox optionsPane = new VBox(12);
         optionsPane.getChildren().addAll(optionsLabel, options);
@@ -230,9 +230,9 @@ class View {
 
         outputArea.textProperty().addListener((observableValue, s, t1) -> {
             if (!outputArea.getText().isEmpty()) {
-                saveWordsButton.setDisable(false);
+                exportWordsButton.setDisable(false);
             } else {
-                saveWordsButton.setDisable(true);
+                exportWordsButton.setDisable(true);
             }
         });
 
@@ -312,13 +312,13 @@ class View {
             }
         });
 
-        saveRatiosButton.setOnAction(e -> {
-            File file = fcSaveRatios.showSaveDialog(primaryStage);
+        saveSeedButton.setOnAction(e -> {
+            File file = fcSaveSeed.showSaveDialog(primaryStage);
             if (file != null) controller.save(controller.getAnalyser(), file.getPath());
         });
 
-        saveWordsButton.setOnAction(e -> {
-            File file = fcSaveWords.showSaveDialog(primaryStage);
+        exportWordsButton.setOnAction(e -> {
+            File file = fcExportWords.showSaveDialog(primaryStage);
             if (file != null) {
                 controller.export(this.output, file.getPath());
             }
@@ -357,14 +357,14 @@ class View {
 
         loadChoiceBox.setOnMouseEntered(event -> {
 
-            List<String> ratiosFiles = new ArrayList<>();
+            List<String> seedFiles = new ArrayList<>();
 
             try (
                     Stream<Path> walk = Files.walk(Paths.get(userHomeProgram.getPath()))
 
             ) {
 
-                ratiosFiles = walk
+                seedFiles = walk
                         .map(e -> e.getFileName().toString())
                         .filter(e -> e.endsWith(".bin"))
                         .collect(Collectors.toList());
@@ -373,13 +373,13 @@ class View {
                 e.printStackTrace();
             }
 
-            ObservableList<String> ratiosFilesOb = FXCollections.observableArrayList(ratiosFiles);
+            ObservableList<String> seedFilesOb = FXCollections.observableArrayList(seedFiles);
 
             if (loadChoiceBox.getItems().isEmpty()) {
-                loadChoiceBox.setItems(ratiosFilesOb);
+                loadChoiceBox.setItems(seedFilesOb);
             }
             else {
-                loadChoiceBox.setOnMouseClicked(nextEvent -> loadChoiceBox.setItems(ratiosFilesOb));
+                loadChoiceBox.setOnMouseClicked(nextEvent -> loadChoiceBox.setItems(seedFilesOb));
             }
         });
 
@@ -406,7 +406,7 @@ class View {
                 outputArea.setText(outputArea.getText() + (word + "\n"));
             }
 
-            saveWordsButton.setDisable(false);
+            exportWordsButton.setDisable(false);
         }
 
         if (initProgramParameters.getPath() != null) {
@@ -449,7 +449,7 @@ class View {
 
     private void settingOptionsDisability(boolean boo) {
 
-        saveRatiosButton.setDisable(boo);
+        saveSeedButton.setDisable(boo);
         levelOfCompression.setDisable(boo);
         levelOfCompressionLabel.setDisable(boo);
         compressButton.setDisable(boo);
