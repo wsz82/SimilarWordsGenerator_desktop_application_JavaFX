@@ -14,6 +14,7 @@ class LoaderWords extends ALoader{
     Analyser load (String path) {
 
         List<String> loadList = new ArrayList<>();
+        Analyser analyser = new Analyser();
 
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8))
@@ -33,6 +34,8 @@ class LoaderWords extends ALoader{
             e.printStackTrace();
         }
 
-        return new Analyser(loadList);
+        analyser.analyze(loadList);
+
+        return analyser;
     }
 }

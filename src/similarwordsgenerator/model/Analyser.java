@@ -5,6 +5,8 @@ import java.util.*;
 
 class Analyser implements Serializable{
 
+    private int hashOfInput;
+
     private List<Integer> wordsLengths;     //random length is weight average distribution
     private List<Character> firstChars;
     private List<Character> lastChars;
@@ -13,7 +15,8 @@ class Analyser implements Serializable{
     Analyser () {
     }
 
-    Analyser (List<String> input) {
+    void analyze (List<String> input) {
+        this.hashOfInput = input.hashCode();
 
         List<Integer> wordsLengths = new ArrayList<>();
         List<Character> firstChars = new ArrayList<>();
@@ -91,7 +94,6 @@ class Analyser implements Serializable{
                         temp = (int) sum;
                         tempChar = ch;
                     }
-
                 }
                 tempFirstChars.add(tempChar);
             }
@@ -101,10 +103,10 @@ class Analyser implements Serializable{
 
         if (this.wordsLengths.size() > compressionLevel) {
 
-            Set<Integer> uniWordLenghts = new HashSet<>(this.wordsLengths);
+            Set<Integer> uniWordLengths = new HashSet<>(this.wordsLengths);
             List<Integer> tempWordLengths = new ArrayList<>();
 
-            for (Integer i : uniWordLenghts) {
+            for (Integer i : uniWordLengths) {
 
                 long sum = this.wordsLengths.stream()
                         .filter(g -> g.equals(i))
@@ -136,15 +138,12 @@ class Analyser implements Serializable{
                         temp = (int) sum;
                         tempInteger = i;
                     }
-
                 }
                 tempWordLengths.add(tempInteger);
             }
 
             this.wordsLengths = tempWordLengths;
         }
-
-
 
         for (Character key : this.charsCount.keySet() ) {
 
@@ -187,7 +186,6 @@ class Analyser implements Serializable{
                             temp = (int) sum;
                             tempChar = ch;
                         }
-
                     }
                     tempList.add(tempChar);
                 }
@@ -196,10 +194,12 @@ class Analyser implements Serializable{
                 charsCount.get(key).addAll(tempList);
             }
 
-
+            this.charsCount = charsCount;
         }
+    }
 
-        this.charsCount = charsCount;
+    int getHashOfInput() {
+        return hashOfInput;
     }
 
     List<Integer> getWordsLengths() {

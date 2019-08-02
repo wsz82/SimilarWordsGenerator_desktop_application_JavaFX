@@ -21,7 +21,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import similarwordsgenerator.model.IController;
+import similarwordsgenerator.model.Controller;
 import similarwordsgenerator.model.ProgramParameters;
 
 import java.awt.*;
@@ -54,8 +54,9 @@ class View {
     private String path = null;
     private List<String> output = new ArrayList<>();
     private List<String> input = new ArrayList<>();
+    private boolean compressed;
 
-    void init (IController controller, Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, String mementoName, List<String> output) {
+    void init (Controller controller, Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, String mementoName, List<String> output) {
 
         Group root = new Group();
         Scene scene = new Scene(root, 650, 600);
@@ -81,23 +82,20 @@ class View {
 
         numberOfWords = new TextField(Integer.toString(initProgramParameters.getNumberOfWords()));
         Label numberOfWordsLabel = new Label("Number of words:");
-        minWordLength = minMaxTextFields(initProgramParameters.getMinWordLength());
+        minWordLength = getMinMaxTextFields(initProgramParameters.getMinWordLength());
         Label minWordLengthLabel = new Label("Min. word length:");
-        maxWordLength = minMaxTextFields(initProgramParameters.getMaxWordLength());
+        maxWordLength = getMinMaxTextFields(initProgramParameters.getMaxWordLength());
         Label maxWordLengthLabel = new Label("Max. word length:");
         levelOfCompression = new TextField();
-        levelOfCompression.setDisable(true);
         levelOfCompressionLabel = new Label("Level of compression:");
-        levelOfCompressionLabel.setDisable(true);
 
         Button loadButton = new Button("Load");
         Button generateButton = new Button("Generate");
         saveSeedButton = new Button("Save seed");
-        saveSeedButton.setDisable(true);
         exportWordsButton = new Button("Export words");
-        exportWordsButton.setDisable(true);
         compressButton = new Button("Compress");
-        compressButton.setDisable(true);
+
+        setPrimarySettings();
 
         ChoiceBox<String> loadChoiceBox = new ChoiceBox<>();
         loadChoiceBox.setMinWidth(100);
@@ -137,7 +135,7 @@ class View {
                 new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"),
                 new FileChooser.ExtensionFilter("Seed", "*.bin"));
 
-        checkMemento(initProgramParameters, output);
+        checkMemento(initProgramParameters, output, controller);
 
         final HBox loadBox = new HBox();
         loadBox.getChildren().addAll(loadButton, loadChoiceBox);
@@ -169,21 +167,21 @@ class View {
         optionsPane.setAlignment(Pos.TOP_CENTER);
         optionsPane.setPadding(new Insets(12, 12, 12, 12));
 
-        final VBox inputManualPane = new VBox(12);
-        inputManualPane.getChildren().addAll(inputManualLabel, inputArea);
-        inputManualPane.setAlignment(Pos.TOP_CENTER);
-        inputManualPane.setPadding(new Insets(12, 12, 12, 12));
+        final VBox inputAreaPane = new VBox(12);
+        inputAreaPane.getChildren().addAll(inputManualLabel, inputArea);
+        inputAreaPane.setAlignment(Pos.TOP_CENTER);
+        inputAreaPane.setPadding(new Insets(12, 12, 12, 12));
 
-        final VBox outputPane = new VBox(12);
-        outputPane.getChildren().addAll(outputLabel, outputArea);
-        outputPane.setAlignment(Pos.TOP_CENTER);
-        outputPane.setPadding(new Insets(12, 12, 12, 12));
+        final VBox outputAreaPane = new VBox(12);
+        outputAreaPane.getChildren().addAll(outputLabel, outputArea);
+        outputAreaPane.setAlignment(Pos.TOP_CENTER);
+        outputAreaPane.setPadding(new Insets(12, 12, 12, 12));
 
-        final Pane hp = new HBox(12);
-        hp.getChildren().addAll(optionsPane, inputManualPane, outputPane);
-        hp.setPadding(new Insets(12, 12, 12, 12));
+        final Pane mainPane = new HBox(12);
+        mainPane.getChildren().addAll(optionsPane, inputAreaPane, outputAreaPane);
+        mainPane.setPadding(new Insets(12, 12, 12, 12));
 
-        root.getChildren().addAll(hp);
+        root.getChildren().addAll(mainPane);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -198,12 +196,12 @@ class View {
         inputArea.setOnMouseClicked(mouseEvent -> {
             if ( !inputArea.getText().isEmpty() && path != null && inputArea.getText().equals(new File(path).getName()) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
 
-                path = null;
-                input = Collections.emptyList();
+                cleanInputAndPath();
 
                 inputArea.setText("");
                 inputArea.setEditable(true);
                 loadChoiceBox.setValue(null);
+                controller.setAnalyser(null);
             }
         });
 
@@ -215,17 +213,21 @@ class View {
                     input = Arrays.asList(t.split("\n"));
                 }
 
-                settingOptionsDisability(false);
+                setOptionsDisability(false);
 
             } else {
 
-                //Clearing input variables when there is no pointer for them
-                path = null;
-                input = Collections.emptyList();
+                cleanInputAndPath();
 
-                settingOptionsDisability(true);
+                controller.setAnalyser(null);
+
+                setOptionsDisability(true);
             }
 
+            if (!t.equals(s)) {
+                compressed = false;
+                controller.setAnalyser(null);
+            }
         });
 
         outputArea.textProperty().addListener((observableValue, s, t1) -> {
@@ -270,41 +272,45 @@ class View {
 
             if (file != null) {
 
+                cleanInputAndPath();
                 path = file.getPath();
-                input = Collections.emptyList();
 
                 inputArea.setText(file.getName());
                 inputArea.setEditable(false);
                 loadChoiceBox.setValue(null);
+                controller.setAnalyser(null);
             }
         });
 
         generateButton.setOnAction(f -> {
-            ProgramParameters programParameters = settingParameters();
+            ProgramParameters programParameters = setParameters(controller);
 
             try {
-
                 //Clearing output for new words
                 this.output.removeAll(this.output);
 
                 try {
                     //Generating new words
-                    this.output.addAll(controller.generate(programParameters));
+                    if (compressed) {
+                        this.output.addAll(controller.generate(programParameters, Controller.GenerateSource.CURRENT_ANALYSER));
+                    } else {
+                        this.output.addAll(controller.generate(programParameters, Controller.GenerateSource.NEW_ANALYSER));
+                    }
                 } catch (NullPointerException en) {
-                    //If no file is loaded so program asks us to load it
+                    //If no file is loaded so program asks to load it
                     loadButton.fire();
                 }
 
                 //Emptying output area for new words
-                if (path != null || (input != null && !input.isEmpty())) {
+                if (path != null || (input != null && !input.isEmpty()) || controller.getAnalyser() != null) {
                     outputArea.setText("");
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (IllegalArgumentException e) {
-                //Error message if input is wrong
-                errorInput();
+                //Error message if input is wrong type
+                showErrorInput();
             }
 
             for (String word : this.output) {
@@ -325,6 +331,7 @@ class View {
         });
 
         compressButton.setOnAction(e -> {
+            ProgramParameters programParameters = setParameters(controller);
 
             int levelOfCompressionValue = 0;
 
@@ -336,8 +343,12 @@ class View {
 
             if (levelOfCompressionValue > 0) {
                 try {
-                    controller.compress(levelOfCompressionValue);
+                    controller.compress(levelOfCompressionValue, programParameters);
+                    compressed = true;
+                    compressButton.setDisable(true);
                 } catch (NullPointerException en) {
+                    loadButton.fire();
+                } catch (IOException e1) {
                     loadButton.fire();
                 }
             }
@@ -346,12 +357,11 @@ class View {
         loadChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
 
+                cleanInputAndPath();
                 path = userHomeProgram + File.separator + newValue;
-                input = Collections.emptyList();
 
                 inputArea.setText(newValue);
                 inputArea.setEditable(false);
-
             }
         });
 
@@ -361,7 +371,6 @@ class View {
 
             try (
                     Stream<Path> walk = Files.walk(Paths.get(userHomeProgram.getPath()))
-
             ) {
 
                 seedFiles = walk
@@ -383,22 +392,49 @@ class View {
             }
         });
 
-
-
         primaryStage.setOnCloseRequest(event -> {
-            ProgramParameters programParametersToSave = settingParameters();
+            ProgramParameters programParametersToSave = setParameters(controller);
             new Memento(programParametersToSave, this.output, userHomeProgram, mementoName);
         });
     }
 
-    private void checkMemento(ProgramParameters initProgramParameters, List<String> output) {
+    private void cleanInputAndPath() {
+        path = null;
+        input = Collections.emptyList();
+        compressed = false;
+        compressButton.setDisable(false);
+    }
+
+    private void setPrimarySettings () {
+        saveSeedButton.setDisable(true);
+        exportWordsButton.setDisable(true);
+        compressButton.setDisable(true);
+        levelOfCompression.setDisable(true);
+        levelOfCompressionLabel.setDisable(true);
+    }
+
+    private void checkMemento(ProgramParameters initProgramParameters, List<String> output, Controller controller) {
+        if (initProgramParameters.getLevelOfCompression() != 0) {
+
+            levelOfCompression.setText(Integer.toString(initProgramParameters.getLevelOfCompression()));
+        }
+
+        if (initProgramParameters.getAnalyser() != null) {
+
+            controller.setAnalyser(initProgramParameters.getAnalyser());
+            compressed = initProgramParameters.isCompressed();
+        }
+
         if (initProgramParameters.getInput() != null && !initProgramParameters.getInput().isEmpty()) {
 
             for (String word : initProgramParameters.getInput()) {
                 inputArea.setText(inputArea.getText() + (word + "\n"));
             }
-
             input = initProgramParameters.getInput();
+
+            saveSeedButton.setDisable(false);
+            levelOfCompression.setDisable(false);
+            levelOfCompressionLabel.setDisable(false);
         }
 
         if (output != null && !output.isEmpty()) {
@@ -416,14 +452,15 @@ class View {
             if (fileExists) {
 
                 inputArea.setText(new File(initProgramParameters.getPath()).getName());
+                inputArea.setEditable(false);
                 path = initProgramParameters.getPath();
 
-                settingOptionsDisability(false);
+                setOptionsDisability(false);
             }
         }
     }
 
-    private void errorInput() {
+    private void showErrorInput() {
         Toolkit.getDefaultToolkit().beep();
 
         Stage errorStage = new Stage();
@@ -447,7 +484,7 @@ class View {
         errorStage.show();
     }
 
-    private void settingOptionsDisability(boolean boo) {
+    private void setOptionsDisability(boolean boo) {
 
         saveSeedButton.setDisable(boo);
         levelOfCompression.setDisable(boo);
@@ -455,10 +492,17 @@ class View {
         compressButton.setDisable(boo);
     }
 
-    private ProgramParameters settingParameters() {
+    private ProgramParameters setParameters(Controller controller) {
 
         ProgramParameters.Builder parametersBuilder = new ProgramParameters.Builder();
 
+        parametersBuilder.setAnalyser(controller.getAnalyser());
+        parametersBuilder.setInput(input);
+        parametersBuilder.setPath(path);
+        parametersBuilder.setFirstCharAsInInput(firstChar.isSelected());
+        parametersBuilder.setLastCharAsInInput(lastChar.isSelected());
+        parametersBuilder.setSorted(sorted.isSelected());
+        parametersBuilder.setCompressed(compressed);
         parametersBuilder.setNumberOfWords(Integer.parseInt(numberOfWords.getText()));
         try {
             parametersBuilder.setMinWordLength(Integer.parseInt(minWordLength.getText()));
@@ -470,16 +514,16 @@ class View {
         } catch (NumberFormatException e) {
             parametersBuilder.setMaxWordLength(0);
         }
-        parametersBuilder.setFirstCharAsInInput(firstChar.isSelected());
-        parametersBuilder.setLastCharAsInInput(lastChar.isSelected());
-        parametersBuilder.setSorted(sorted.isSelected());
-        parametersBuilder.setPath(path);
-        parametersBuilder.setInput(input);
+        try {
+        parametersBuilder.setLevelOfCompression(Integer.parseInt(levelOfCompression.getText()));
+        } catch (NumberFormatException e) {
+            parametersBuilder.setMaxWordLength(0);
+        }
 
         return parametersBuilder.build();
     }
 
-    private TextField minMaxTextFields (int number) {
+    private TextField getMinMaxTextFields(int number) {
         if (number == 0) {
             return new TextField();
         } else {
@@ -499,6 +543,11 @@ class View {
         if (f.getControlNewText().isEmpty()) {
             f.setText("");
         }
+
+        if (f.isContentChange()) {
+            compressButton.setDisable(false);
+        }
+
         return f;
     }
 

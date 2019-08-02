@@ -11,9 +11,11 @@ class Generator {
     Generator () {
     }
 
-    Set<String> generate(ProgramParameters programParameters) throws IOException {
+    Set<String> generate(ProgramParameters programParameters, Controller.GenerateSource generateSource) throws IOException {
 
-        fileFormat(programParameters);
+        if (generateSource == Controller.GenerateSource.NEW_ANALYSER) {
+            checkInput(programParameters);
+        }
 
         Set<String> result;
         Set<String> resultCheck = new HashSet<>();
@@ -107,25 +109,41 @@ class Generator {
         return result;
     }
 
-    private void fileFormat(ProgramParameters programParameters) throws IOException {
-        if (programParameters.getInput().isEmpty()) {
+    void checkInput(ProgramParameters programParameters) throws IOException {
+        if (this.analyser != null && programParameters.getAnalyser()!= null && ((programParameters.getAnalyser().getHashOfInput() == this.analyser.getHashOfInput()) || (programParameters.getInput().hashCode() == this.analyser.getHashOfInput()))) {
+
+            return;
+
+        } else
+            if (programParameters.getInput().isEmpty()) {
+
             try {
                 String path = programParameters.getPath();
                 File file = new File(path);
+
                 if (file.getName().endsWith(".txt")) {
+
                     this.analyser = new LoaderWords().load(path);
                 } else if (file.getName().endsWith(".bin")) {
+
                     this.analyser = new LoaderBIN().load(path);
                 } else throw new IOException();
             } catch (IOException e) {
                 throw new IOException("Wrong file format.");
             }
+
         } else {
-            this.analyser = new Analyser(programParameters.getInput());
+
+            this.analyser = new Analyser();
+            analyser.analyze(programParameters.getInput());
         }
     }
 
     Analyser getAnalyser() {
         return analyser;
+    }
+
+    void setAnalyser(Analyser analyser) {
+        this.analyser = analyser;
     }
 }
