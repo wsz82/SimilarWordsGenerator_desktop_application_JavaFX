@@ -114,7 +114,7 @@ class View {
         numberOfWords.setTextFormatter(new TextFormatter<>(this::filterForNumbersOfWords));
 
         minWordLength.setMaxWidth(50);
-        minWordLength.setTextFormatter(new TextFormatter<>(f -> filterForMinWordLength(maxWordLength, f)));
+        minWordLength.setTextFormatter(new TextFormatter<>(change -> filterForMinWordLength(maxWordLength, change)));
 
         maxWordLength.setMaxWidth(50);
         maxWordLength.setTextFormatter(new TextFormatter<>(this::filterForMaxWordLength));
@@ -185,12 +185,12 @@ class View {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        inputArea.setTextFormatter(new TextFormatter<>(f -> {
+        inputArea.setTextFormatter(new TextFormatter<>(change -> {
             if (inputArea.getText().endsWith("\n\n")) {
 
-                f.setText("");
+                change.setText("");
             }
-            return f;
+            return change;
         }));
 
         inputArea.setOnMouseClicked(mouseEvent -> {
@@ -205,12 +205,12 @@ class View {
             }
         });
 
-        inputArea.textProperty().addListener((ov, s, t) -> {
-            if (!t.isEmpty()) {
+        inputArea.textProperty().addListener((observableValue, oldVal, newVal) -> {
+            if (!newVal.isEmpty()) {
 
                 //Case of providing input manually
                 if (path == null) {
-                    input = Arrays.asList(t.split("\n"));
+                    input = Arrays.asList(newVal.split("\n"));
                 }
 
                 setOptionsDisability(false);
@@ -224,13 +224,13 @@ class View {
                 setOptionsDisability(true);
             }
 
-            if (!t.equals(s)) {
+            if (!newVal.equals(oldVal)) {
                 compressed = false;
                 controller.setAnalyser(null);
             }
         });
 
-        outputArea.textProperty().addListener((observableValue, s, t1) -> {
+        outputArea.textProperty().addListener((observableValue) -> {
             if (!outputArea.getText().isEmpty()) {
                 exportWordsButton.setDisable(false);
             } else {
@@ -238,13 +238,13 @@ class View {
             }
         });
 
-        sorted.selectedProperty().addListener((ov, old_val, new_val) -> {
+        sorted.selectedProperty().addListener((observableValue, oldVal, newVal) -> {
 
             Set<String> words;
             List<String> wordsFromOutput = Arrays.asList(outputArea.getText().split("\n"));
             outputArea.setText("");
 
-            if (new_val) {
+            if (newVal) {
                 words = new TreeSet<>(wordsFromOutput);
             } else {
                 words = new HashSet<>(wordsFromOutput);
@@ -267,7 +267,7 @@ class View {
             }
         });
 
-        loadButton.setOnAction(f -> {
+        loadButton.setOnAction(actionEvent -> {
             File file = fcLoad.showOpenDialog(primaryStage);
 
             if (file != null) {
@@ -282,7 +282,7 @@ class View {
             }
         });
 
-        generateButton.setOnAction(f -> {
+        generateButton.setOnAction(actionEvent -> {
             ProgramParameters programParameters = setParameters(controller);
 
             try {
@@ -318,19 +318,19 @@ class View {
             }
         });
 
-        saveSeedButton.setOnAction(e -> {
+        saveSeedButton.setOnAction(actionEvent -> {
             File file = fcSaveSeed.showSaveDialog(primaryStage);
             if (file != null) controller.save(controller.getAnalyser(), file.getPath());
         });
 
-        exportWordsButton.setOnAction(e -> {
+        exportWordsButton.setOnAction(actionEvent -> {
             File file = fcExportWords.showSaveDialog(primaryStage);
             if (file != null) {
                 controller.export(this.output, file.getPath());
             }
         });
 
-        compressButton.setOnAction(e -> {
+        compressButton.setOnAction(actionEvent -> {
             ProgramParameters programParameters = setParameters(controller);
 
             int levelOfCompressionValue = 0;
@@ -346,9 +346,7 @@ class View {
                     controller.compress(levelOfCompressionValue, programParameters);
                     compressed = true;
                     compressButton.setDisable(true);
-                } catch (NullPointerException en) {
-                    loadButton.fire();
-                } catch (IOException e1) {
+                } catch (IOException e) {
                     loadButton.fire();
                 }
             }
@@ -365,7 +363,7 @@ class View {
             }
         });
 
-        loadChoiceBox.setOnMouseEntered(event -> {
+        loadChoiceBox.setOnMouseEntered(mouseEvent -> {
 
             List<String> seedFiles = new ArrayList<>();
 
@@ -392,7 +390,7 @@ class View {
             }
         });
 
-        primaryStage.setOnCloseRequest(event -> {
+        primaryStage.setOnCloseRequest(windowEvent -> {
             ProgramParameters programParametersToSave = setParameters(controller);
             new Memento(programParametersToSave, this.output, userHomeProgram, mementoName);
         });
@@ -531,66 +529,66 @@ class View {
         }
     }
 
-    private TextFormatter.Change filterForLevelOfCompression(TextFormatter.Change f) {
+    private TextFormatter.Change filterForLevelOfCompression(TextFormatter.Change change) {
         try {
-            int input = Integer.parseInt(f.getControlNewText());
+            int input = Integer.parseInt(change.getControlNewText());
             if ( input < 1 ) {
-                f.setText("");
+                change.setText("");
             }
         } catch (NumberFormatException e) {
-            f.setText("");
+            change.setText("");
         }
-        if (f.getControlNewText().isEmpty()) {
-            f.setText("");
+        if (change.getControlNewText().isEmpty()) {
+            change.setText("");
         }
 
-        if (f.isContentChange()) {
+        if (change.isContentChange()) {
             compressButton.setDisable(false);
         }
 
-        return f;
+        return change;
     }
 
-    private TextFormatter.Change filterForMaxWordLength(TextFormatter.Change f) {
+    private TextFormatter.Change filterForMaxWordLength(TextFormatter.Change change) {
         try {
-            int input = Integer.parseInt(f.getControlNewText());
+            int input = Integer.parseInt(change.getControlNewText());
             if ( input < 1 ) {
-                f.setText("");
+                change.setText("");
             }
         } catch (NumberFormatException e) {
-            f.setText("");
+            change.setText("");
         }
-        return f;
+        return change;
     }
 
-    private TextFormatter.Change filterForMinWordLength(TextField maxWordLength, TextFormatter.Change f) {
+    private TextFormatter.Change filterForMinWordLength(TextField maxWordLength, TextFormatter.Change change) {
         try {
-            int input = Integer.parseInt(f.getControlNewText());
+            int input = Integer.parseInt(change.getControlNewText());
             if ( input < 1 ) {
-                f.setText("");
+                change.setText("");
             }
             if ( !maxWordLength.getText().isEmpty() && input > Integer.parseInt(maxWordLength.getText()) ) {
-                f.setText("");
+                change.setText("");
             }
 
         } catch (NumberFormatException e) {
-            f.setText("");
+            change.setText("");
         }
-        return f;
+        return change;
     }
 
-    private TextFormatter.Change filterForNumbersOfWords(TextFormatter.Change f) {
+    private TextFormatter.Change filterForNumbersOfWords(TextFormatter.Change change) {
         try {
-            int input = Integer.parseInt(f.getControlNewText());
+            int input = Integer.parseInt(change.getControlNewText());
             if ( input < 1 ) {
-                f.setText("1");
+                change.setText("1");
             }
         } catch (NumberFormatException e) {
-            f.setText("");
+            change.setText("");
         }
-        if (f.getControlNewText().isEmpty()) {
-            f.setText("1");
+        if (change.getControlNewText().isEmpty()) {
+            change.setText("1");
         }
-        return f;
+        return change;
     }
 }

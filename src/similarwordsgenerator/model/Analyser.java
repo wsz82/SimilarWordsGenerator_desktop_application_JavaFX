@@ -57,6 +57,50 @@ class Analyser implements Serializable{
 
         Map<Character, ArrayList<Character>> charsCount = this.charsCount;
 
+        if (this.wordsLengths.size() > compressionLevel) {
+
+            Set<Integer> uniWordLengths = new HashSet<>(this.wordsLengths);
+            List<Integer> tempWordLengths = new ArrayList<>();
+
+            for (Integer i : uniWordLengths) {
+
+                long sum = this.wordsLengths.stream()
+                        .filter(g -> g.equals(i))
+                        .count();
+
+                int count = (int) sum * compressionLevel / this.wordsLengths.size();
+
+                for (int j = 0; j < count; j++) {
+
+                    tempWordLengths.add(i);
+                }
+            }
+
+            while (tempWordLengths.size() < compressionLevel) {
+
+                int tempInteger = 0;
+                int temp = 0;
+
+                List<Integer> tempStream = new ArrayList<>(getWordsLengths());
+                tempStream.removeAll(tempWordLengths);
+
+                for (Integer i : tempStream) {
+
+                    long sum = tempStream.stream()
+                            .filter(g -> g.equals(i))
+                            .count();
+
+                    if (sum > temp) {
+                        temp = (int) sum;
+                        tempInteger = i;
+                    }
+                }
+                tempWordLengths.add(tempInteger);
+            }
+
+            this.wordsLengths = tempWordLengths;
+        }
+
         if (this.firstChars.size() > compressionLevel) {
 
             Set<Character> uniFirstChars = new HashSet<>(this.firstChars);
@@ -101,48 +145,48 @@ class Analyser implements Serializable{
             this.firstChars = tempFirstChars;
         }
 
-        if (this.wordsLengths.size() > compressionLevel) {
+        if (this.lastChars.size() > compressionLevel) {
 
-            Set<Integer> uniWordLengths = new HashSet<>(this.wordsLengths);
-            List<Integer> tempWordLengths = new ArrayList<>();
+            Set<Character> uniLastChars = new HashSet<>(this.lastChars);
+            List<Character> tempLastChars = new ArrayList<>();
 
-            for (Integer i : uniWordLengths) {
+            for (Character ch : uniLastChars) {
 
-                long sum = this.wordsLengths.stream()
-                        .filter(g -> g.equals(i))
+                long sum = this.lastChars.stream()
+                        .filter(g -> g.equals(ch))
                         .count();
 
-                int count = (int) sum * compressionLevel / this.wordsLengths.size();
+                int count = (int) sum * compressionLevel / this.lastChars.size();
 
                 for (int j = 0; j < count; j++) {
 
-                    tempWordLengths.add(i);
+                    tempLastChars.add(ch);
                 }
             }
 
-            while (tempWordLengths.size() < compressionLevel) {
+            while (tempLastChars.size() < compressionLevel) {
 
-                int tempInteger = 0;
+                char tempChar = 0;
                 int temp = 0;
 
-                List<Integer> tempStream = new ArrayList<>(getWordsLengths());
-                tempStream.removeAll(tempWordLengths);
+                List<Character> tempStream = new ArrayList<>(getLastChars());
+                tempStream.removeAll(tempLastChars);
 
-                for (Integer i : tempStream) {
+                for (Character ch : tempStream) {
 
                     long sum = tempStream.stream()
-                            .filter(g -> g.equals(i))
+                            .filter(g -> g.equals(ch))
                             .count();
 
                     if (sum > temp) {
                         temp = (int) sum;
-                        tempInteger = i;
+                        tempChar = ch;
                     }
                 }
-                tempWordLengths.add(tempInteger);
+                tempLastChars.add(tempChar);
             }
 
-            this.wordsLengths = tempWordLengths;
+            this.lastChars = tempLastChars;
         }
 
         for (Character key : this.charsCount.keySet() ) {

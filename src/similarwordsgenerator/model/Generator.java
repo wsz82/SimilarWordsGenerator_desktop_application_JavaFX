@@ -114,22 +114,17 @@ class Generator {
 
             return;
 
-        } else
-            if (programParameters.getInput().isEmpty()) {
+        } else if (programParameters.getInput().isEmpty()) {
 
-            try {
-                String path = programParameters.getPath();
-                File file = new File(path);
+            String path = programParameters.getPath();
+            File file = new File(path);
 
-                if (file.getName().endsWith(".txt")) {
-
-                    this.analyser = new LoaderWords().load(path);
-                } else if (file.getName().endsWith(".bin")) {
-
-                    this.analyser = new LoaderBIN().load(path);
-                } else throw new IOException();
-            } catch (IOException e) {
-                throw new IOException("Wrong file format.");
+            if (file.getName().endsWith(".txt")) {
+                this.analyser = new LoaderWords().load(path);
+            } else if (file.getName().endsWith(".bin")) {
+                this.analyser = new LoaderBIN().load(path);
+            } else {
+                throw new IOException();
             }
 
         } else {

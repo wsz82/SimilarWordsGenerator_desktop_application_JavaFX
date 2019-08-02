@@ -85,7 +85,7 @@ public final class ProgramParameters implements Serializable {
         private boolean firstCharAsInInput = true;
         private boolean lastCharAsInInput = true;
         private boolean compressed = false;
-        private int numberOfWords = 1;
+        private int numberOfWords = 10;
         private int minWordLength = 0;  //number 0 is a flag for default word length
         private int maxWordLength = 0;  //number 0 is a flag for default word length
         private int levelOfCompression = 0;
