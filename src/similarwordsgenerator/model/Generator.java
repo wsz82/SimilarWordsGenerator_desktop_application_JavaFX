@@ -1,7 +1,6 @@
 package similarwordsgenerator.model;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 class Generator {
@@ -11,7 +10,7 @@ class Generator {
     Generator () {
     }
 
-    Set<String> generate(ProgramParameters programParameters, Controller.GenerateSource generateSource) throws IOException {
+    Set<String> generate(ProgramParameters programParameters, Controller.GenerateSource generateSource) {
 
         if (generateSource == Controller.GenerateSource.NEW_ANALYSER) {
             checkInput(programParameters);
@@ -109,7 +108,7 @@ class Generator {
         return result;
     }
 
-    void checkInput(ProgramParameters programParameters) throws IOException {
+    void checkInput(ProgramParameters programParameters) {
         if (this.analyser != null && programParameters.getAnalyser()!= null && ((programParameters.getAnalyser().getHashOfInput() == this.analyser.getHashOfInput()) || (programParameters.getInput().hashCode() == this.analyser.getHashOfInput()))) {
 
             return;
@@ -123,8 +122,6 @@ class Generator {
                 this.analyser = new LoaderWords().load(path);
             } else if (file.getName().endsWith(".bin")) {
                 this.analyser = new LoaderBIN().load(path);
-            } else {
-                throw new IOException();
             }
 
         } else {

@@ -306,8 +306,6 @@ class View {
                     outputArea.setText("");
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (IllegalArgumentException e) {
                 //Error message if input is wrong type
                 showErrorInput();
@@ -342,13 +340,10 @@ class View {
             }
 
             if (levelOfCompressionValue > 0) {
-                try {
-                    controller.compress(levelOfCompressionValue, programParameters);
-                    compressed = true;
-                    compressButton.setDisable(true);
-                } catch (IOException e) {
-                    loadButton.fire();
-                }
+
+                controller.compress(levelOfCompressionValue, programParameters);
+                compressed = true;
+                compressButton.setDisable(true);
             }
         });
 

@@ -1,6 +1,5 @@
 package similarwordsgenerator.model;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -12,11 +11,11 @@ public class Controller {
 
     private Generator generator = new Generator();
 
-    public Set<String> generate(ProgramParameters programParameters, Controller.GenerateSource generateSource) throws IOException {
+    public Set<String> generate(ProgramParameters programParameters, Controller.GenerateSource generateSource) {
         return generator.generate(programParameters, generateSource);
     }
 
-    public void compress(int compressionLevel, ProgramParameters programParameters) throws IOException {
+    public void compress(int compressionLevel, ProgramParameters programParameters) {
         if (generator.getAnalyser() != null) {
             generator.getAnalyser().compress(compressionLevel);
         } else {
