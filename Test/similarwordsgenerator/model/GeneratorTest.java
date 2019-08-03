@@ -1,10 +1,6 @@
-/*
 package similarwordsgenerator.model;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class GeneratorTest {
 
@@ -16,11 +12,11 @@ class GeneratorTest {
         parametersBuilder = new ProgramParameters.Builder();
     }
 
-    @Test
+/*    @Test
     void shouldThrowNullPointerExceptionWhenInputAndPathAreEmpty() {
         parameters = parametersBuilder.build();
         assertThrows(NullPointerException.class, () -> new Generator().generate(parameters));
-    }
+    }*/
 
 
-}*/
+}
