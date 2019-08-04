@@ -25,7 +25,7 @@ public class Controller {
     }
 
     public void save(Analyser analyser, String path) {
-        SaverBIN saver = new SaverBIN();
+        SaverSeed saver = new SaverSeed();
         saver.save(analyser, path);
     }
 

@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-class SaverBIN {
+class SaverSeed {
 
     void save(Analyser analyser, String path) {
 
