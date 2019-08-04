@@ -50,6 +50,10 @@ class Analyser implements Serializable{
 
     void compress (int compressionLevel) {
 
+        if (compressionLevel == 0) {
+            return;
+        }
+
         wordsLengths = compressListWithInteger(compressionLevel, wordsLengths);
         firstChars = compressListWithCharacters(compressionLevel, firstChars);
         lastChars = compressListWithCharacters(compressionLevel, lastChars);

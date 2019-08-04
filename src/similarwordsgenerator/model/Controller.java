@@ -19,7 +19,7 @@ public class Controller {
         if (generator.getAnalyser() != null) {
             generator.getAnalyser().compress(compressionLevel);
         } else {
-            generator.checkInput(programParameters);
+            generator.createAnalyser(programParameters);
             generator.getAnalyser().compress(compressionLevel);
         }
     }

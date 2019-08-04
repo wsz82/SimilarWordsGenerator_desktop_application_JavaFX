@@ -13,7 +13,7 @@ class Generator {
     Set<String> generate(ProgramParameters programParameters, Controller.GenerateSource generateSource) {
 
         if (generateSource == Controller.GenerateSource.NEW_ANALYSER) {
-            checkInput(programParameters);
+            createAnalyser(programParameters);
         }
 
         Set<String> result;
@@ -22,35 +22,27 @@ class Generator {
         long time = System.currentTimeMillis();
 
         if (programParameters.isSorted()) {
-
             result = new TreeSet<>();
+        } else {
+            result = new HashSet<>();
+        }
 
-        } else result = new HashSet<>();
-
-        while ( result.size() < programParameters.getNumberOfWords() ) {
+        while (result.size() < programParameters.getNumberOfWords()) {
 
             StringBuilder output = new StringBuilder();
-            Random r = new Random();
+            Random random = new Random();
 
+            int maxWordLength = programParameters.getMaxWordLength();
+            int minWordLength = programParameters.getMinWordLength();
             boolean firstCharAsInInput = programParameters.isFirstCharAsInInput();
             boolean lastCharAsInInput = programParameters.isLastCharAsInInput();
             int wordLength;
-            int maxWordLength = programParameters.getMaxWordLength();
-            int minWordLength = programParameters.getMinWordLength();
 
-            if ( minWordLength != 0 && maxWordLength != 0 ) {
+            wordLength = getWordLength(random, maxWordLength, minWordLength);
 
-                wordLength = r.nextInt((maxWordLength - minWordLength) + 1) + minWordLength;
+            output = addFirstChar(output, random, firstCharAsInInput);
 
-            } else wordLength = analyser.getWordsLengths().get(r.nextInt(analyser.getWordsLengths().toArray().length));
-
-            if ( firstCharAsInInput ) {
-
-                output.append(analyser.getFirstChars().toArray()[r.nextInt(analyser.getFirstChars().toArray().length)]);
-
-            } else output.append(analyser.getCharsCount().keySet().toArray()[r.nextInt(analyser.getCharsCount().keySet().toArray().length)]);
-
-            for ( int i = 1; i <= wordLength; i++) {
+            for (int i = 1; i <= wordLength; i++) {
 
                 if (output.toString().length() == wordLength) {
                     break;
@@ -71,63 +63,106 @@ class Generator {
 
                         if (!tempLastChars.isEmpty()) {
 
-                            output.append(tempLastChars.toArray()[r.nextInt(tempLastChars.toArray().length)]);
+                            output.append(tempLastChars.toArray()[random.nextInt(tempLastChars.toArray().length)]);
                         } else {
                             output.deleteCharAt(wordLength - 2);
                             wordLength += 2;
                         }
-                    } else output.append(charsCountList.toArray()[r.nextInt(charsCountList.toArray().length)]);
-                } else output.append(charsCountList.toArray()[r.nextInt(charsCountList.toArray().length)]);
+                    } else {
+                        output.append(charsCountList.toArray()[random.nextInt(charsCountList.toArray().length)]);
+                    }
+                } else {
+                    output.append(charsCountList.toArray()[random.nextInt(charsCountList.toArray().length)]);
+                }
             }
 
             String tempWord = output.toString();
 
-            if (minWordLength != 0 && tempWord.length() < minWordLength) {
-                continue;
-            }
+            if (skipThisWordWhenShorterThanMin(minWordLength, tempWord)) continue;
+
             if (System.currentTimeMillis() - time < checkTime) {
                 if (maxWordLength != 0 && tempWord.length() > maxWordLength) {
 
                     result.add(tempWord.substring(0, maxWordLength - 1));
 
-                } else result.add(tempWord);
+                } else {
+                    result.add(tempWord);
+                }
             } else if (System.currentTimeMillis() - time < checkTime*2) {
 
                 if (maxWordLength != 0 && tempWord.length() > maxWordLength) {
 
                     resultCheck.add(tempWord.substring(0, maxWordLength - 1));
-
-                } else resultCheck.add(tempWord);
+                } else {
+                    resultCheck.add(tempWord);
+                }
             } else if (!result.containsAll(resultCheck)) {
+
                 result.addAll(resultCheck);
                 time = System.currentTimeMillis();
                 checkTime *= 2;
-            } else break;
-        }
 
+            } else {
+                break;
+            }
+        }
         return result;
     }
 
-    void checkInput(ProgramParameters programParameters) {
-        if (this.analyser != null && programParameters.getAnalyser()!= null && ((programParameters.getAnalyser().getHashOfInput() == this.analyser.getHashOfInput()) || (programParameters.getInput().hashCode() == this.analyser.getHashOfInput()))) {
+    private StringBuilder addFirstChar(StringBuilder output, Random random, boolean firstCharAsInInput) {
+        if (firstCharAsInInput) {
+            output.append(analyser.getFirstChars().toArray()[random.nextInt(analyser.getFirstChars().toArray().length)]);
+        } else {
+            output.append(analyser.getCharsCount().keySet().toArray()[random.nextInt(analyser.getCharsCount().keySet().toArray().length)]);
+        }
+        return output;
+    }
 
-            return;
+    private int getWordLength(Random random, int maxWordLength, int minWordLength) {
+        int wordLength;
+        if (minWordLength != 0 && maxWordLength != 0) {
+            wordLength = random.nextInt((maxWordLength - minWordLength) + 1) + minWordLength;
+        } else {
+            wordLength = analyser.getWordsLengths().get(random.nextInt(analyser.getWordsLengths().toArray().length));
+        }
+        return wordLength;
+    }
+
+    private boolean skipThisWordWhenShorterThanMin(int minWordLength, String tempWord) {
+        return minWordLength != 0 && tempWord.length() < minWordLength;
+    }
+
+    void createAnalyser(ProgramParameters programParameters) {
+
+        if (programParameters.getAnalyser() != null) {
+
+            boolean analysersAreTheSame = programParameters.getAnalyser().getHashOfInput() == this.analyser.getHashOfInput();
+            boolean inputsAreTheSame = (programParameters.getInput().hashCode() == this.analyser.getHashOfInput());
+
+            if (analysersAreTheSame || inputsAreTheSame) {
+
+                return;
+            }
 
         } else if (programParameters.getInput().isEmpty()) {
 
-            String path = programParameters.getPath();
-            File file = new File(path);
-
-            if (file.getName().endsWith(".txt")) {
-                this.analyser = new LoaderWords().load(path);
-            } else if (file.getName().endsWith(".bin")) {
-                this.analyser = new LoaderBIN().load(path);
-            }
+            checkFileFormat(programParameters);
 
         } else {
 
             this.analyser = new Analyser();
             analyser.analyze(programParameters.getInput());
+        }
+    }
+
+    private void checkFileFormat(ProgramParameters programParameters) {
+        String path = programParameters.getPath();
+        File file = new File(path);
+
+        if (file.getName().endsWith(".txt")) {
+            this.analyser = new LoaderWords().load(path);
+        } else if (file.getName().endsWith(".bin")) {
+            this.analyser = new LoaderBIN().load(path);
         }
     }
 

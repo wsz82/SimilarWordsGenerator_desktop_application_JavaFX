@@ -80,7 +80,7 @@ public final class ProgramParameters implements Serializable {
 
         private Analyser analyser = null;
         private List<String> input = Collections.emptyList();
-        private String path;
+        private String path = null;
         private boolean sorted = true;
         private boolean firstCharAsInInput = true;
         private boolean lastCharAsInInput = true;
@@ -88,7 +88,7 @@ public final class ProgramParameters implements Serializable {
         private int numberOfWords = 10;
         private int minWordLength = 0;  //number 0 is a flag for default word length
         private int maxWordLength = 0;  //number 0 is a flag for default word length
-        private int levelOfCompression = 0;
+        private int levelOfCompression = 0; //number 0 is a flag for non-compression
 
         public Builder setAnalyser(Analyser analyser) {
             this.analyser = analyser;

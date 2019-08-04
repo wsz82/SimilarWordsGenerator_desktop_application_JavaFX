@@ -142,7 +142,7 @@ class AnalyserTest {
     @Nested
     class AnalyserWithMultipleWords {
 
-        List<String> input = new ArrayList<>(Arrays.asList("John", "Nancy", "Stacy"));
+        List<String> input = Arrays.asList("John", "Nancy", "Stacy");
         Analyser analyser = new Analyser();
 
         @BeforeEach
