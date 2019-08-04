@@ -16,8 +16,8 @@ class AnalyserTest {
     @Nested
     class EmptyListInAnalyser {
 
-        List<String> input = new ArrayList<>(Arrays.asList(""));
-        Analyser analyser = new Analyser();
+        private List<String> input = new ArrayList<>(Arrays.asList(""));
+        private Analyser analyser = new Analyser();
 
         @BeforeEach
         void fulfillAnalyser() {
@@ -48,8 +48,8 @@ class AnalyserTest {
     @Nested
     class AnalyserWithOneChar {
 
-        List<String> input = new ArrayList<>(Arrays.asList("A"));
-        Analyser analyser = new Analyser();
+        private List<String> input = new ArrayList<>(Arrays.asList("A"));
+        private Analyser analyser = new Analyser();
 
         @BeforeEach
         void fulfillAnalyser() {
@@ -105,8 +105,8 @@ class AnalyserTest {
     @Nested
     class AnalyserWithOneWord {
 
-        List<String> input = new ArrayList<>(Arrays.asList("Analyser"));
-        Analyser analyser = new Analyser();
+        private List<String> input = new ArrayList<>(Arrays.asList("Analyser"));
+        private Analyser analyser = new Analyser();
 
         @BeforeEach
         void fulfillAnalyser() {
@@ -142,8 +142,8 @@ class AnalyserTest {
     @Nested
     class AnalyserWithMultipleWords {
 
-        List<String> input = Arrays.asList("John", "Nancy", "Stacy");
-        Analyser analyser = new Analyser();
+        private List<String> input = Arrays.asList("John", "Nancy", "Stacy");
+        private Analyser analyser = new Analyser();
 
         @BeforeEach
         void fulfillAnalyser() {
@@ -199,8 +199,8 @@ class AnalyserTest {
     @Nested
     class CompressTests {
 
-        List<String> input = new ArrayList<>(Arrays.asList("John", "Nancy", "Stacy"));
-        Analyser analyser = new Analyser();
+        private List<String> input = new ArrayList<>(Arrays.asList("John", "Nancy", "Stacy"));
+        private Analyser analyser = new Analyser();
 
         @BeforeEach
         void fulfillAnalyser() {

@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GeneratorTest {
 
-    ProgramParameters.Builder parametersBuilder;
-    ProgramParameters parameters;
-    Generator generator;
-    String testDir;
+    private ProgramParameters.Builder parametersBuilder;
+    private ProgramParameters parameters;
+    private Generator generator;
+    private String testDir;
 
 /*  default parameters:
 
