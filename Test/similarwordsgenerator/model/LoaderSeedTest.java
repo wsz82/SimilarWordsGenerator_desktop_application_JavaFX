@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class LoaderWordsTest {
+class LoaderSeedTest {
 
-    private LoaderWords loaderWords = new LoaderWords();
+    private LoaderSeed loaderSeed = new LoaderSeed();
     private String testDir = "C://Users//Wojciech//IdeaProjects//Similar Words Generator//Test//Files//";
 
     @Test
-    void analyserIsReturnedFromTXTfile() {
-        assertNotNull(loaderWords.load(testDir + "input.txt"));
+    void analyserIsReturnedFromBINfile() {
+        assertNotNull(loaderSeed.load(testDir + "input.bin"));
     }
 
 }

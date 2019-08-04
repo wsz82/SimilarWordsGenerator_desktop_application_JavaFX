@@ -4,7 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-class LoaderBIN extends ALoader {
+class LoaderSeed extends ALoader {
 
     @Override
     Analyser load(String path) {

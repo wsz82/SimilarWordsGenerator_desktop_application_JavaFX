@@ -162,7 +162,7 @@ class Generator {
         if (file.getName().endsWith(".txt")) {
             this.analyser = new LoaderWords().load(path);
         } else if (file.getName().endsWith(".bin")) {
-            this.analyser = new LoaderBIN().load(path);
+            this.analyser = new LoaderSeed().load(path);
         }
     }
 
