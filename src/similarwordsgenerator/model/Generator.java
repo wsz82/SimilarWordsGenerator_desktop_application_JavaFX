@@ -42,39 +42,7 @@ class Generator {
 
             output = addFirstChar(output, random, firstCharAsInInput);
 
-            for (int i = 1; i <= wordLength; i++) {
-
-                if (output.toString().length() == wordLength) {
-                    break;
-                }
-
-                char lastChar = output.toString().toCharArray()[output.toString().length() - 1];
-                if (!analyser.getCharsCount().containsKey(lastChar)) {
-                    break;
-                }
-                ArrayList<Character> charsCountList = analyser.getCharsCount().get(lastChar);
-
-                if (lastCharAsInInput) {
-
-                    if (output.toString().length() == wordLength - 1) {
-
-                        ArrayList<Character> tempLastChars = new ArrayList<>(charsCountList);
-                        tempLastChars.retainAll(analyser.getLastChars());
-
-                        if (!tempLastChars.isEmpty()) {
-
-                            output.append(tempLastChars.toArray()[random.nextInt(tempLastChars.toArray().length)]);
-                        } else {
-                            output.deleteCharAt(wordLength - 2);
-                            wordLength += 2;
-                        }
-                    } else {
-                        output.append(charsCountList.toArray()[random.nextInt(charsCountList.toArray().length)]);
-                    }
-                } else {
-                    output.append(charsCountList.toArray()[random.nextInt(charsCountList.toArray().length)]);
-                }
-            }
+            output = makeAword(output, random, lastCharAsInInput, wordLength);
 
             String tempWord = output.toString();
 
@@ -107,6 +75,43 @@ class Generator {
             }
         }
         return result;
+    }
+
+    private StringBuilder makeAword(StringBuilder output, Random random, boolean lastCharAsInInput, int wordLength) {
+        for (int i = 1; i <= wordLength; i++) {
+
+            if (output.toString().length() == wordLength) {
+                break;
+            }
+
+            char lastChar = output.toString().toCharArray()[output.toString().length() - 1];
+            if (!analyser.getCharsCount().containsKey(lastChar)) {
+                break;
+            }
+            ArrayList<Character> charsCountList = analyser.getCharsCount().get(lastChar);
+
+            if (lastCharAsInInput) {
+
+                if (output.toString().length() == wordLength - 1) {
+
+                    ArrayList<Character> tempLastChars = new ArrayList<>(charsCountList);
+                    tempLastChars.retainAll(analyser.getLastChars());
+
+                    if (!tempLastChars.isEmpty()) {
+
+                        output.append(tempLastChars.toArray()[random.nextInt(tempLastChars.toArray().length)]);
+                    } else {
+                        output.deleteCharAt(wordLength - 2);
+                        wordLength += 2;
+                    }
+                } else {
+                    output.append(charsCountList.toArray()[random.nextInt(charsCountList.toArray().length)]);
+                }
+            } else {
+                output.append(charsCountList.toArray()[random.nextInt(charsCountList.toArray().length)]);
+            }
+        }
+        return output;
     }
 
     private StringBuilder addFirstChar(StringBuilder output, Random random, boolean firstCharAsInInput) {
