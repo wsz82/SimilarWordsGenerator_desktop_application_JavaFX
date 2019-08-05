@@ -22,6 +22,5 @@ class SaverSeed {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }

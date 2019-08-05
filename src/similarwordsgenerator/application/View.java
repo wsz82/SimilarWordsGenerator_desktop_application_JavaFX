@@ -37,6 +37,8 @@ import java.util.stream.Stream;
 
 class View {
 
+    private Controller controller = new Controller();
+
     private TextArea inputArea;
     private TextArea outputArea;
     private CheckBox sorted;
@@ -56,7 +58,7 @@ class View {
     private List<String> input = new ArrayList<>();
     private boolean compressed;
 
-    void init (Controller controller, Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, String mementoName, List<String> output) {
+    void init (Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, String mementoName, List<String> output) {
 
         Group root = new Group();
         Scene scene = new Scene(root, 650, 600);
@@ -308,7 +310,7 @@ class View {
 
             } catch (IllegalArgumentException e) {
                 //Error message if input is wrong type
-                showErrorInput();
+                showErrorInputMessage();
             }
 
             for (String word : this.output) {
@@ -317,8 +319,11 @@ class View {
         });
 
         saveSeedButton.setOnAction(actionEvent -> {
+            ProgramParameters programParameters = setParameters(controller);
             File file = fcSaveSeed.showSaveDialog(primaryStage);
-            if (file != null) controller.save(controller.getAnalyser(), file.getPath());
+            if (file != null) {
+                controller.save(file.getPath(), programParameters);
+            }
         });
 
         exportWordsButton.setOnAction(actionEvent -> {
@@ -453,7 +458,7 @@ class View {
         }
     }
 
-    private void showErrorInput() {
+    private void showErrorInputMessage() {
         Toolkit.getDefaultToolkit().beep();
 
         Stage errorStage = new Stage();
@@ -508,11 +513,10 @@ class View {
             parametersBuilder.setMaxWordLength(0);
         }
         try {
-        parametersBuilder.setLevelOfCompression(Integer.parseInt(levelOfCompression.getText()));
+            parametersBuilder.setLevelOfCompression(Integer.parseInt(levelOfCompression.getText()));
         } catch (NumberFormatException e) {
             parametersBuilder.setMaxWordLength(0);
         }
-
         return parametersBuilder.build();
     }
 

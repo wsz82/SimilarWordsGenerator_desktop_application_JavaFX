@@ -24,9 +24,10 @@ public class Controller {
         }
     }
 
-    public void save(Analyser analyser, String path) {
+    public void save(String path, ProgramParameters programParameters) {
+        generator.createAnalyser(programParameters);
         SaverSeed saver = new SaverSeed();
-        saver.save(analyser, path);
+        saver.save(generator.getAnalyser(), path);
     }
 
     public void export(List<String> listOfWords, String path) {

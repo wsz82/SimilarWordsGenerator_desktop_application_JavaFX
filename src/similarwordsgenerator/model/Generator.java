@@ -164,9 +164,11 @@ class Generator {
         File file = new File(path);
 
         if (file.getName().endsWith(".txt")) {
-            this.analyser = new LoaderWords().load(path);
+            LoaderWords loaderWords = new LoaderWords();
+            this.analyser = loaderWords.load(path);
         } else if (file.getName().endsWith(".bin")) {
-            this.analyser = new LoaderSeed().load(path);
+            LoaderSeed loaderSeed = new LoaderSeed();
+            this.analyser = loaderSeed.load(path);
         }
     }
 

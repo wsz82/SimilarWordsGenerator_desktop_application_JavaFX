@@ -6,7 +6,6 @@ import java.util.*;
 class Analyser implements Serializable{
 
     private int hashOfInput;
-
     private List<Integer> wordsLengths = new ArrayList<>();     //random length is weight average distribution
     private List<Character> firstChars = new ArrayList<>();
     private List<Character> lastChars = new ArrayList<>();

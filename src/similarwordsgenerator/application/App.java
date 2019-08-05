@@ -2,7 +2,6 @@ package similarwordsgenerator.application;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import similarwordsgenerator.model.Controller;
 import similarwordsgenerator.model.ProgramParameters;
 
 import java.io.File;
@@ -18,7 +17,6 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        Controller controller = new Controller();
         View view = new View();
 
         List<String> output = new ArrayList<>();
@@ -42,6 +40,6 @@ public class App extends Application {
             parameters = new ProgramParameters.Builder().build();
         }
 
-        view.init(controller, primaryStage, parameters, userHomeProgram, mementoName, output);
+        view.init(primaryStage, parameters, userHomeProgram, mementoName, output);
     }
 }
