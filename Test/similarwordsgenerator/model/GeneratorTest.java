@@ -66,7 +66,7 @@ class GeneratorTest {
         @Test
         void maximumWordsAreGenerated() {
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
-            assertEquals(7, output.size());
+            assertEquals(5, output.size());
         }
 
         @Test
@@ -177,7 +177,7 @@ class GeneratorTest {
             parametersBuilder.setPath(testDir + "input.txt");
             parameters = parametersBuilder.build();
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
-            assertEquals(7, output.size());
+            assertEquals(5, output.size());
         }
 
         @Test
@@ -186,7 +186,7 @@ class GeneratorTest {
             parametersBuilder.setPath(testDir + "input.bin");
             parameters = parametersBuilder.build();
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
-            assertEquals(7, output.size());
+            assertEquals(5, output.size());
         }
 
         @Test
@@ -195,7 +195,7 @@ class GeneratorTest {
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
             parametersBuilder.setInput(Collections.emptyList());
             output = generator.generate(parameters, Controller.GenerateSource.CURRENT_ANALYSER);
-            assertEquals(7, output.size());
+            assertEquals(5, output.size());
         }
     }
 }
