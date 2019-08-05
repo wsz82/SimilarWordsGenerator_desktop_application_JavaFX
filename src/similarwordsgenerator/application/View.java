@@ -12,6 +12,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -52,6 +53,7 @@ class View {
     private Button saveSeedButton;
     private Button exportWordsButton;
     private Button compressButton;
+    private ChoiceBox<String> loadChoiceBox;
 
     private String path = null;
     private List<String> output = new ArrayList<>();
@@ -99,7 +101,7 @@ class View {
 
         setPrimarySettings();
 
-        ChoiceBox<String> loadChoiceBox = new ChoiceBox<>();
+        loadChoiceBox = new ChoiceBox<>();
         loadChoiceBox.setMinWidth(100);
         loadChoiceBox.setMaxWidth(100);
 
@@ -196,40 +198,27 @@ class View {
         }));
 
         inputArea.setOnMouseClicked(mouseEvent -> {
-            if ( !inputArea.getText().isEmpty() && path != null && inputArea.getText().equals(new File(path).getName()) && mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
-
-                cleanInputAndPath();
-
-                inputArea.setText("");
-                inputArea.setEditable(true);
-                loadChoiceBox.setValue(null);
-                controller.setAnalyser(null);
+            if (path != null) {
+                clearPathFromInputArea(mouseEvent);
             }
         });
 
         inputArea.textProperty().addListener((observableValue, oldVal, newVal) -> {
             if (!newVal.isEmpty()) {
 
-                //Case of providing input manually
                 if (path == null) {
-                    input = Arrays.asList(newVal.split("\n"));
+                    provideInputManually(newVal);
                 }
 
                 setOptionsDisability(false);
 
             } else {
 
-                cleanInputAndPath();
-
-                controller.setAnalyser(null);
-
+                clearInputPathAnalyser();
                 setOptionsDisability(true);
             }
 
-            if (!newVal.equals(oldVal)) {
-                compressed = false;
-                controller.setAnalyser(null);
-            }
+            checkIfToClearCompressedFlag(oldVal, newVal);
         });
 
         outputArea.textProperty().addListener((observableValue) -> {
@@ -259,11 +248,9 @@ class View {
             }
         });
 
-        maxWordLength.focusedProperty().addListener((ov, old_val, new_val) -> {
+        maxWordLength.focusedProperty().addListener((ov) -> {
             try {
-                if (!new_val && !minWordLength.getText().isEmpty() && (Integer.parseInt(maxWordLength.getText()) < Integer.parseInt(minWordLength.getText()))) {
-                    maxWordLength.setText("");
-                }
+                clearMaxWordLengthFieldIfProvidedNumberIsBiggerThanInMinWordLength();
             } catch (NumberFormatException e) {
                 maxWordLength.setText("");
             }
@@ -274,13 +261,12 @@ class View {
 
             if (file != null) {
 
-                cleanInputAndPath();
+                clearInputPathAnalyser();
                 path = file.getPath();
 
                 inputArea.setText(file.getName());
                 inputArea.setEditable(false);
                 loadChoiceBox.setValue(null);
-                controller.setAnalyser(null);
             }
         });
 
@@ -288,30 +274,12 @@ class View {
             ProgramParameters programParameters = setParameters(controller);
 
             try {
-                //Clearing output for new words
-                this.output.removeAll(this.output);
-
-                try {
-                    //Generating new words
-                    if (compressed) {
-                        this.output.addAll(controller.generate(programParameters, Controller.GenerateSource.CURRENT_ANALYSER));
-                    } else {
-                        this.output.addAll(controller.generate(programParameters, Controller.GenerateSource.NEW_ANALYSER));
-                    }
-                } catch (NullPointerException en) {
-                    //If no file is loaded so program asks to load it
-                    loadButton.fire();
-                }
-
-                //Emptying output area for new words
-                if (path != null || (input != null && !input.isEmpty()) || controller.getAnalyser() != null) {
-                    outputArea.setText("");
-                }
-
-            } catch (IllegalArgumentException e) {
-                //Error message if input is wrong type
+                generateWords(programParameters);
+            } catch (NullPointerException en) {
                 showErrorInputMessage();
             }
+
+            clearOutputArea();
 
             for (String word : this.output) {
                 outputArea.setText(outputArea.getText() + (word + "\n"));
@@ -355,7 +323,7 @@ class View {
         loadChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
 
-                cleanInputAndPath();
+                clearInputPathAnalyser();
                 path = userHomeProgram + File.separator + newValue;
 
                 inputArea.setText(newValue);
@@ -396,9 +364,58 @@ class View {
         });
     }
 
-    private void cleanInputAndPath() {
-        path = null;
+    private void provideInputManually(String newVal) {
+        input = Arrays.asList(newVal.split("\n"));
+    }
+
+    private void checkIfToClearCompressedFlag(String oldVal, String newVal) {
+        if (!newVal.equals(oldVal)) {
+            compressed = false;
+            controller.setAnalyser(null);
+        }
+    }
+
+    private void clearPathFromInputArea(MouseEvent mouseEvent) {
+
+        boolean pathIsWrittenToInputArea = inputArea.getText().equals(new File(path).getName());
+        boolean primaryMouseButtonIsClicked = mouseEvent.getButton().equals(MouseButton.PRIMARY);
+        boolean buttonIsClickedTwice = mouseEvent.getClickCount() == 2;
+
+        if (pathIsWrittenToInputArea && primaryMouseButtonIsClicked && buttonIsClickedTwice) {
+
+            clearInputPathAnalyser();
+
+            inputArea.setText("");
+            inputArea.setEditable(true);
+            loadChoiceBox.setValue(null);
+        }
+    }
+
+    private void clearMaxWordLengthFieldIfProvidedNumberIsBiggerThanInMinWordLength() {
+        if (!minWordLength.getText().isEmpty() && (Integer.parseInt(maxWordLength.getText()) < Integer.parseInt(minWordLength.getText()))) {
+            maxWordLength.setText("");
+        }
+    }
+
+    private void clearOutputArea() {
+        if (path != null || (input != null && !input.isEmpty()) || controller.getAnalyser() != null) {
+            outputArea.setText("");
+        }
+    }
+
+    private void generateWords(ProgramParameters programParameters) {
+        this.output.removeAll(this.output);
+        if (compressed) {
+            this.output.addAll(controller.generate(programParameters, Controller.GenerateSource.CURRENT_ANALYSER));
+        } else {
+            this.output.addAll(controller.generate(programParameters, Controller.GenerateSource.NEW_ANALYSER));
+        }
+    }
+
+    private void clearInputPathAnalyser() {
         input = Collections.emptyList();
+        path = null;
+        controller.setAnalyser(null);
         compressed = false;
         compressButton.setDisable(false);
     }
@@ -438,6 +455,7 @@ class View {
         if (output != null && !output.isEmpty()) {
             for (String word : output) {
                 outputArea.setText(outputArea.getText() + (word + "\n"));
+                this.output.add(word);
             }
 
             exportWordsButton.setDisable(false);
@@ -472,7 +490,7 @@ class View {
 
         Scene errorScene = new Scene(errorPane, 300, 100);
 
-        Text errorText = new Text("Wrong input data format!");
+        Text errorText = new Text("Wrong input!");
 
         errorPane.getChildren().add(errorText);
         errorPane.setAlignment(Pos.CENTER);
@@ -515,7 +533,7 @@ class View {
         try {
             parametersBuilder.setLevelOfCompression(Integer.parseInt(levelOfCompression.getText()));
         } catch (NumberFormatException e) {
-            parametersBuilder.setMaxWordLength(0);
+            parametersBuilder.setLevelOfCompression(0);
         }
         return parametersBuilder.build();
     }
