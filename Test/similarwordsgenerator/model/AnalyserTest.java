@@ -44,7 +44,6 @@ class AnalyserTest {
             assertTrue(analyser.getCharsCount().isEmpty());
         }
     }
-/*
     @Nested
     class AnalyserWithOneChar {
 
@@ -58,7 +57,7 @@ class AnalyserTest {
 
         @Test
         void shouldContainOneWordLength() {
-            assertTrue(!analyser.getWordsLengths().isEmpty());
+            assertEquals(1, analyser.getWordsLengths().size());
         }
 
         @Test
@@ -68,7 +67,7 @@ class AnalyserTest {
 
         @Test
         void shouldContainOneFirstChar() {
-            assertFalse(analyser.getFirstChars().isEmpty());
+            assertEquals(1, analyser.getFirstChars().size());
         }
 
         @Test
@@ -78,7 +77,7 @@ class AnalyserTest {
 
         @Test
         void shouldContainOneLastChar() {
-            assertTrue(!analyser.getLastChars().isEmpty());
+            assertEquals(1, analyser.getLastChars().size());
         }
 
         @Test
@@ -137,7 +136,7 @@ class AnalyserTest {
         void mapShouldContain7Lists() {
             assertEquals(7, analyser.getCharsCount().values().size());
         }
-    }*/
+    }
 
     @Nested
     class AnalyserWithMultipleWords {

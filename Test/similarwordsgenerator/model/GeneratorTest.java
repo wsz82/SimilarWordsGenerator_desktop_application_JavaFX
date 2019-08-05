@@ -32,16 +32,10 @@ class GeneratorTest {
     maxWordLength = 0;  //number 0 is a flag for default word length
     levelOfCompression = 0; //number 0 is a flag for non-compression*/
 
-/*    @BeforeAll
-    void setTestDirectory() {
-        testDir = System.getProperty("dir.test.files");
-    }*/
-
     @BeforeEach
     void setParameters() {
         parametersBuilder = new ProgramParameters.Builder();
         generator = new Generator();
-//        testDir = System.getProperty("dir.test.files");
         testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
     }
 

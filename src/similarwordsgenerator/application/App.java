@@ -14,20 +14,22 @@ public class App extends Application {
         launch(args);
     }
 
+    private File userHomeProgram;
+    private ProgramParameters parameters;
+    private List<String> output = new ArrayList<>();
+
     @Override
     public void start(Stage primaryStage) {
 
         View view = new View();
-
-        List<String> output = new ArrayList<>();
-        File userHomeProgram;
-        String path = System.getProperty("user.home") + File.separator + ".similarwordsgenerator";
-        new File(path).mkdir();
-        userHomeProgram = new File(path);
-
         String mementoName = "memento";
 
-        ProgramParameters parameters;
+        createLocationForFiles();
+        loadParametersFromMemento(mementoName);
+        view.init(primaryStage, parameters, userHomeProgram, mementoName, output);
+    }
+
+    private void loadParametersFromMemento(String mementoName) {
         boolean mementoExists = new File(userHomeProgram + File.separator + mementoName).exists();
 
         if (mementoExists) {
@@ -39,7 +41,11 @@ public class App extends Application {
         } else {
             parameters = new ProgramParameters.Builder().build();
         }
+    }
 
-        view.init(primaryStage, parameters, userHomeProgram, mementoName, output);
+    private void createLocationForFiles() {
+        String path = System.getProperty("user.home") + File.separator + ".similarwordsgenerator";
+        new File(path).mkdir();
+        userHomeProgram = new File(path);
     }
 }

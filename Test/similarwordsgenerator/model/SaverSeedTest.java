@@ -11,9 +11,9 @@ class SaverSeedTest {
 
     private String testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
     private List<String> input = Arrays.asList("John", "Nancy", "Stacy");
-    Analyser analyser = new Analyser();
-    SaverSeed saverSeed = new SaverSeed();
-    LoaderSeed loaderSeed = new LoaderSeed();
+    private Analyser analyser = new Analyser();
+    private SaverSeed saverSeed = new SaverSeed();
+    private LoaderSeed loaderSeed = new LoaderSeed();
 
     @Test
     void analyserAreTheSameBeforeAndAfterSavingSeed() {
