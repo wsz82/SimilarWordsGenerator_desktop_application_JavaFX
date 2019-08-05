@@ -7,6 +7,10 @@ class Generator {
 
     private Analyser analyser;
 
+    private StringBuilder output;
+    private Random random = new Random();
+    private int wordLength;
+
     Generator () {
     }
 
@@ -29,20 +33,15 @@ class Generator {
 
         while (result.size() < programParameters.getNumberOfWords()) {
 
-            StringBuilder output = new StringBuilder();
-            Random random = new Random();
-
             int maxWordLength = programParameters.getMaxWordLength();
             int minWordLength = programParameters.getMinWordLength();
             boolean firstCharAsInInput = programParameters.isFirstCharAsInInput();
             boolean lastCharAsInInput = programParameters.isLastCharAsInInput();
-            int wordLength;
+            output = new StringBuilder();
+            wordLength = getWordLength(maxWordLength, minWordLength);
 
-            wordLength = getWordLength(random, maxWordLength, minWordLength);
-
-            output = addFirstChar(output, random, firstCharAsInInput);
-
-            output = makeAword(output, random, lastCharAsInInput, wordLength);
+            output = addFirstChar(firstCharAsInInput);
+            output = makeAword(lastCharAsInInput);
 
             String tempWord = output.toString();
 
@@ -77,7 +76,7 @@ class Generator {
         return result;
     }
 
-    private StringBuilder makeAword(StringBuilder output, Random random, boolean lastCharAsInInput, int wordLength) {
+    private StringBuilder makeAword(boolean lastCharAsInInput) {
         for (int i = 1; i <= wordLength; i++) {
 
             if (output.toString().length() == wordLength) {
@@ -114,7 +113,7 @@ class Generator {
         return output;
     }
 
-    private StringBuilder addFirstChar(StringBuilder output, Random random, boolean firstCharAsInInput) {
+    private StringBuilder addFirstChar(boolean firstCharAsInInput) {
         if (firstCharAsInInput) {
             output.append(analyser.getFirstChars().toArray()[random.nextInt(analyser.getFirstChars().toArray().length)]);
         } else {
@@ -123,7 +122,7 @@ class Generator {
         return output;
     }
 
-    private int getWordLength(Random random, int maxWordLength, int minWordLength) {
+    private int getWordLength(int maxWordLength, int minWordLength) {
         int wordLength;
         if (minWordLength != 0 && maxWordLength != 0) {
             wordLength = random.nextInt((maxWordLength - minWordLength) + 1) + minWordLength;
