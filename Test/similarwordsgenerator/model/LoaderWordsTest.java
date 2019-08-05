@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class LoaderWordsTest {
 
     private LoaderWords loaderWords = new LoaderWords();
-    private String testDir = "C://Users//Wojciech//IdeaProjects//Similar Words Generator//Test//Files//";
+    private String testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
 
     @Test
     void analyserIsReturnedFromTXTfile() {

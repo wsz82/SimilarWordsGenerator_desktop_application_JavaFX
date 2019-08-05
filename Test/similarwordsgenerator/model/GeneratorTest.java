@@ -42,7 +42,7 @@ class GeneratorTest {
         parametersBuilder = new ProgramParameters.Builder();
         generator = new Generator();
 //        testDir = System.getProperty("dir.test.files");
-        testDir = "C://Users//Wojciech//IdeaProjects//Similar Words Generator//Test//Files//";
+        testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
     }
 
     @Test

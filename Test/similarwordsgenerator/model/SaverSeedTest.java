@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SaverSeedTest {
 
-    private String testDir = "C://Users//Wojciech//IdeaProjects//Similar Words Generator//Test//Files//";
+    private String testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
     private List<String> input = Arrays.asList("John", "Nancy", "Stacy");
     Analyser analyser = new Analyser();
     SaverSeed saverSeed = new SaverSeed();

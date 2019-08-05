@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class WordsExportTest {
 
-    private String testDir = "C://Users//Wojciech//IdeaProjects//Similar Words Generator//Test//Files//";
+    private String testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
     private List<String> input = Arrays.asList("John", "Nancy", "Stacy");
     private Set<String> output;
     private Generator generator = new Generator();
