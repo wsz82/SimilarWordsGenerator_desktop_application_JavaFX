@@ -6,9 +6,10 @@ import java.util.*;
 class Analyser implements Serializable{
 
     private int hashOfInput;
-    private List<Integer> wordsLengths = new ArrayList<>();     //random length is weight average distribution
+    private List<Integer> wordsLengths = new ArrayList<>();
     private List<Character> firstChars = new ArrayList<>();
     private List<Character> lastChars = new ArrayList<>();
+    //For each unique char analyser counts occurrences of next char in the whole data
     private Map<Character, ArrayList<Character>> charsCount = new HashMap<>();
 
     Analyser () {
@@ -53,17 +54,18 @@ class Analyser implements Serializable{
             return;
         }
 
-        wordsLengths = compressListWithInteger(compressionLevel, wordsLengths);
+        compressWordsLengths(compressionLevel);
         firstChars = compressListWithCharacters(compressionLevel, firstChars);
         lastChars = compressListWithCharacters(compressionLevel, lastChars);
-        charsCount = compressCharsCount(compressionLevel, charsCount);
+        compressCharsCount(compressionLevel);
     }
 
-    private Map<Character, ArrayList<Character>> compressCharsCount(int compressionLevel, Map<Character, ArrayList<Character>> charsCount) {
+    private void compressCharsCount(int compressionLevel) {
+        Map<Character, ArrayList<Character>> localCharsCount = charsCount;
 
-        for (Character key : charsCount.keySet() ) {
+        for (Character key : localCharsCount.keySet() ) {
 
-            List<Character> charsCountList = charsCount.get(key);
+            List<Character> charsCountList = localCharsCount.get(key);
 
             if (charsCountList.size() > compressionLevel) {
 
@@ -86,11 +88,11 @@ class Analyser implements Serializable{
 
                 tempList = fulfillCharListToCompressionLevel(tempList, charsCountList, compressionLevel);
 
-                charsCount.get(key).clear();
-                charsCount.get(key).addAll(tempList);
+                localCharsCount.get(key).clear();
+                localCharsCount.get(key).addAll(tempList);
             }
         }
-        return charsCount;
+        this.charsCount = localCharsCount;
     }
 
     private List<Character> compressListWithCharacters(int compressionLevel, List<Character> listWithCharacters) {
@@ -146,7 +148,8 @@ class Analyser implements Serializable{
         return tempList;
     }
 
-    private List<Integer> compressListWithInteger(int compressionLevel, List<Integer> listWithIntegers) {
+    private void compressWordsLengths(int compressionLevel) {
+        List<Integer> listWithIntegers = wordsLengths;
         if (listWithIntegers.size() > compressionLevel) {
 
             Set<Integer> uniWordLengths = new HashSet<>(listWithIntegers);
@@ -168,9 +171,7 @@ class Analyser implements Serializable{
 
             tempWordLengths = fulfillIntegerListToCompressionLevel(tempWordLengths, listWithIntegers, compressionLevel);
 
-            return tempWordLengths;
-        } else {
-            return listWithIntegers;
+            this.wordsLengths = tempWordLengths;
         }
     }
 
