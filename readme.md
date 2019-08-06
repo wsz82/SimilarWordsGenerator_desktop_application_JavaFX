@@ -9,7 +9,9 @@ Builder design pattern is used for creating parameters for Generator. Memento pa
 
 ## Installation
 
-The project uses Java SDK 12 and JavaFX SDK 12. Follow instructions on https://openjfx.io/openjfx-docs/ to add JavaFX to the project.
+The project uses Java SDK 12 and JavaFX SDK 12. Follow instructions on https://openjfx.io/openjfx-docs/ to add JavaFX to the project.<br/> 
+For tests add in VM configurations:<br/>
+ -Ddir.test.files="pathToFileWithProject\Similar Words Generator\Test\Files".
 
 ## Usage
 

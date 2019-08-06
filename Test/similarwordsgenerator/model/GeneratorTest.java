@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +16,7 @@ class GeneratorTest {
     private ProgramParameters.Builder parametersBuilder;
     private ProgramParameters parameters;
     private Generator generator;
-    private String testDir;
+    private String testDir = System.getProperty("dir.test.files");
 
 /*  default parameters:
 
@@ -35,7 +36,6 @@ class GeneratorTest {
     void setParameters() {
         parametersBuilder = new ProgramParameters.Builder();
         generator = new Generator();
-        testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
     }
 
     @Test
@@ -178,7 +178,7 @@ class GeneratorTest {
         @Test
         void outputFromTXTfileIsGenerated() {
             parametersBuilder.setInput(Collections.emptyList());
-            parametersBuilder.setPath(testDir + "input.txt");
+            parametersBuilder.setPath(testDir + File.separator + "input.txt");
             parameters = parametersBuilder.build();
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
             assertEquals(5, output.size());
@@ -187,7 +187,7 @@ class GeneratorTest {
         @Test
         void outputFromSeedFileIsGenerated() {
             parametersBuilder.setInput(Collections.emptyList());
-            parametersBuilder.setPath(testDir + "input.bin");
+            parametersBuilder.setPath(testDir + File.separator + "input.bin");
             parameters = parametersBuilder.build();
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
             assertEquals(5, output.size());
