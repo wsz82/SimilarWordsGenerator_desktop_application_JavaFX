@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import similarwordsgenerator.model.ProgramParameters;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,12 @@ public class App extends Application {
     }
 
     private void createLocationForFiles() {
-        String path = System.getProperty("user.home") + File.separator + ".similarwordsgenerator";
+        String path = System.getProperty("user.home");
+        try {
+            path = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParent();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         new File(path).mkdir();
         userHomeProgram = new File(path);
     }
