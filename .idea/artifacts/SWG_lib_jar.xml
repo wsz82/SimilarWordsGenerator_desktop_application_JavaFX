@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="Similar Words Generator:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Similar_Words_Generator_jar</output-path>
+  <artifact type="jar" name="SWG_lib:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SWG_lib_jar</output-path>
     <root id="archive" name="Similar Words Generator.jar">
       <element id="module-output" name="Similar Words Generator" />
       <element id="extracted-dir" path="C:/javafx-sdk-12.0.1/lib/javafx.base.jar" path-in-jar="/" />

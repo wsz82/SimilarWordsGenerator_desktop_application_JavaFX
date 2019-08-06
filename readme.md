@@ -5,7 +5,7 @@ It is a program to generate words similar to given input.
 ## Description
 
 There are two core classes: Analyser and Generator. First is responsible for analysing an input, second makes new words.
-Builder design pattern is used for creating parameters for Generator. Memento pattern is to restore settings after closing the application. It is stored in HOME USER .similarwordsgenerator directory.
+Builder design pattern is used for creating parameters for Generator. Memento pattern is to restore settings after closing the application.
 
 ## Installation
 
