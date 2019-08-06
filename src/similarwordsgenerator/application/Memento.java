@@ -12,12 +12,12 @@ class Memento implements Serializable {
     Memento() {
     }
 
-    Memento(ProgramParameters programParameters, List<String> output, File userHomeProgram, String mementoName) {
+    Memento(ProgramParameters programParameters, List<String> output, File programDir, String mementoName) {
         this.programParameters = programParameters;
         this.output = output;
 
         try (
-                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(userHomeProgram + File.separator + mementoName))
+                ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(programDir + File.separator + mementoName))
         ) {
             os.writeObject(this);
 

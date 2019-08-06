@@ -6,10 +6,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -17,21 +13,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import similarwordsgenerator.model.Controller;
 import similarwordsgenerator.model.ProgramParameters;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -61,7 +52,7 @@ class View {
     private List<String> input = new ArrayList<>();
     private boolean compressed;
 
-    void init (Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, String mementoName, List<String> output) {
+    void init (Stage primaryStage, ProgramParameters initProgramParameters, File programDir, String mementoName, List<String> output) {
         Group root = new Group();
         Scene scene = new Scene(root, 650, 600);
         primaryStage.setResizable(false);
@@ -90,11 +81,11 @@ class View {
         loadChoiceBox.setMinWidth(100);
         loadChoiceBox.setMaxWidth(100);
         FileChooser fcLoad = new FileChooser();
-        fcLoad.setInitialDirectory(userHomeProgram);
+        fcLoad.setInitialDirectory(programDir);
         FileChooser fcSaveSeed = new FileChooser();
-        fcSaveSeed.setInitialDirectory(userHomeProgram);
+        fcSaveSeed.setInitialDirectory(programDir);
         FileChooser fcExportWords = new FileChooser();
-        fcExportWords.setInitialDirectory(userHomeProgram);
+        fcExportWords.setInitialDirectory(programDir);
 
         numberOfWords.setMaxWidth(50);
         numberOfWords.setTextFormatter(new TextFormatter<>(this::filterForNumbersOfWords));
@@ -241,8 +232,10 @@ class View {
 
             try {
                 generateWords(programParameters);
-            } catch (NullPointerException en) {
-                showErrorInputMessage();
+            } catch (NullPointerException e) {
+                InputErrorMessage.show();
+            } catch (IllegalArgumentException e) {
+                InputErrorMessage.show();
             }
             clearOutputArea();
             for (String word : this.output) {
@@ -284,7 +277,7 @@ class View {
         loadChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 clearInputPathAnalyser();
-                path = userHomeProgram + File.separator + newValue;
+                path = programDir + File.separator + newValue;
                 inputArea.setText(newValue);
                 inputArea.setEditable(false);
             }
@@ -294,7 +287,7 @@ class View {
             List<String> seedFiles = new ArrayList<>();
 
             try (
-                    Stream<Path> walk = Files.walk(Paths.get(userHomeProgram.getPath()))
+                    Stream<Path> walk = Files.walk(Paths.get(programDir.getPath()))
             ) {
                 seedFiles = walk
                         .map(e -> e.getFileName().toString())
@@ -315,7 +308,7 @@ class View {
 
         primaryStage.setOnCloseRequest(windowEvent -> {
             ProgramParameters programParametersToSave = setParameters(controller);
-            new Memento(programParametersToSave, this.output, userHomeProgram, mementoName);
+            new Memento(programParametersToSave, this.output, programDir, mementoName);
         });
     }
 
@@ -416,28 +409,6 @@ class View {
                 setOptionsDisability(false);
             }
         }
-    }
-
-    private void showErrorInputMessage() {
-        Toolkit.getDefaultToolkit().beep();
-
-        Stage errorStage = new Stage();
-        errorStage.setResizable(false);
-        errorStage.setAlwaysOnTop(true);
-        errorStage.initModality(Modality.APPLICATION_MODAL);
-        errorStage.initStyle(StageStyle.DECORATED);
-        errorStage.setTitle("Input error");
-
-        VBox errorPane = new VBox();
-        Scene errorScene = new Scene(errorPane, 300, 100);
-        Text errorText = new Text("Wrong input!");
-
-        errorPane.getChildren().add(errorText);
-        errorPane.setAlignment(Pos.CENTER);
-        errorPane.setPadding(new Insets(12, 12, 12, 12));
-
-        errorStage.setScene(errorScene);
-        errorStage.show();
     }
 
     private void setOptionsDisability(boolean boo) {

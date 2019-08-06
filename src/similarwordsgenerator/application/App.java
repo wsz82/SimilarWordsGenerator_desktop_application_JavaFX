@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class App extends Application {
-    private File userHomeProgram;
+    private File programDir;
     private ProgramParameters parameters;
     private List<String> output = new ArrayList<>();
 
@@ -25,14 +25,14 @@ public class App extends Application {
 
         createLocationForFiles();
         loadParametersFromMemento(mementoName);
-        view.init(primaryStage, parameters, userHomeProgram, mementoName, output);
+        view.init(primaryStage, parameters, programDir, mementoName, output);
     }
 
     private void loadParametersFromMemento(String mementoName) {
-        boolean mementoExists = new File(userHomeProgram + File.separator + mementoName).exists();
+        boolean mementoExists = new File(programDir + File.separator + mementoName).exists();
 
         if (mementoExists) {
-            Memento memento = Memento.loadMemento(userHomeProgram, mementoName);
+            Memento memento = Memento.loadMemento(programDir, mementoName);
             parameters = memento.getProgramParameters();
             output = memento.getOutput();
         } else {
@@ -48,6 +48,6 @@ public class App extends Application {
             e.printStackTrace();
         }
         new File(path).mkdir();
-        userHomeProgram = new File(path);
+        programDir = new File(path);
     }
 }
