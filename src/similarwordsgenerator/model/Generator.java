@@ -17,7 +17,6 @@ class Generator {
     }
 
     Set<String> generate(ProgramParameters programParameters, Controller.GenerateSource generateSource) {
-
         Set<String> result;
         Set<String> resultCheck = new HashSet<>();
         int checkTime = 200;
@@ -36,30 +35,20 @@ class Generator {
             lastCharAsInInput = programParameters.isLastCharAsInInput();
             maxWordLength = programParameters.getMaxWordLength();
             minWordLength = programParameters.getMinWordLength();
-            output = new StringBuilder();
-            wordLength = getWordLength(minWordLength, maxWordLength);
 
             makeWord();
             if (output == null) {
+                if (System.currentTimeMillis() - time > checkTime) {
+                    break;
+                }
                 continue;
             }
             String tempWord = output.toString();
 
-            if (skipThisWordWhenShorterThanMin(minWordLength, tempWord)) {
-                continue;
-            }
             if (System.currentTimeMillis() - time < checkTime) {
-                if (maxWordLength != 0 && tempWord.length() > maxWordLength) {
-                    result.add(tempWord.substring(0, maxWordLength - 1));
-                } else {
-                    result.add(tempWord);
-                }
+                result.add(tempWord);
             } else if (System.currentTimeMillis() - time < checkTime*2) {
-                if (maxWordLength != 0 && tempWord.length() > maxWordLength) {
-                    resultCheck.add(tempWord.substring(0, maxWordLength - 1));
-                } else {
-                    resultCheck.add(tempWord);
-                }
+                resultCheck.add(tempWord);
             } else if (!result.containsAll(resultCheck)) {
                 result.addAll(resultCheck);
                 time = System.currentTimeMillis();
@@ -72,16 +61,21 @@ class Generator {
     }
 
     private void makeWord() {
+        output = new StringBuilder();
+        setWordLength();
         addFirstChar();
         for (int i = 1; i <= wordLength - 1; i++) {
             if (!isLastCharInCharsCount()) {
                 output = null;
                 return;
             }
-            ArrayList<Character> charsCountList = analyser.getCharsCount().get(getLastChar());  //TODO extract array
-            output.append(charsCountList.toArray()[random.nextInt(charsCountList.toArray().length)]);
+            ArrayList<Character> charsCountList = analyser.getCharsCount().get(getLastChar());
+            Character[] charsCountArr = charsCountList.toArray(new Character[0]);
+            output.append(charsCountArr[random.nextInt(charsCountArr.length)]);
         }
-        if (lastCharAsInInput && isLastCharNotInLastCharsList()) {
+        boolean isLongerThanMaxWordLength = (maxWordLength != 0 && output.length() > maxWordLength);
+        boolean isShorterThanMinWordLength = (minWordLength != 0 && output.length() < minWordLength);
+        if ((lastCharAsInInput && isLastCharNotInLastCharsList()) || isLongerThanMaxWordLength  || isShorterThanMinWordLength) {
             output = null;
         }
     }
@@ -100,24 +94,54 @@ class Generator {
 
     private void addFirstChar() {
         if (firstCharAsInInput) {
-            output.append(analyser.getFirstChars().toArray()[random.nextInt(analyser.getFirstChars().toArray().length)]);
+            Character[] firstCharsArr = analyser.getFirstChars().toArray(new Character[0]);
+            output.append(firstCharsArr[random.nextInt(firstCharsArr.length)]);
         } else {
-            output.append(analyser.getCharsCount().keySet().toArray()[random.nextInt(analyser.getCharsCount().keySet().toArray().length)]);
+            Character[] charsCountKeySetArr = analyser.getCharsCount().keySet().toArray(new Character[0]);
+            output.append(charsCountKeySetArr[random.nextInt(charsCountKeySetArr.length)]);
         }
     }
 
-    private int getWordLength(int minWordLength, int maxWordLength) {
-        int wordLength;
+    private void setWordLength() {
         if (minWordLength != 0 && maxWordLength != 0) {
-            wordLength = random.nextInt((maxWordLength - minWordLength) + 1) + minWordLength;
+            chooseFromManualInputs();
+        } else if (minWordLength != 0) {
+            checkIfMinWordLengthIsHigherThanMaxDefault();
+        } else if (maxWordLength != 0) {
+            checkIfMaxWordLengthIsShorterThanMinDefault();
         } else {
-            wordLength = analyser.getWordsLengths().get(random.nextInt(analyser.getWordsLengths().toArray().length));
+            chooseDefaultWordLength();
         }
-        return wordLength;
     }
 
-    private boolean skipThisWordWhenShorterThanMin(int minWordLength, String tempWord) {
-        return minWordLength != 0 && tempWord.length() < minWordLength;
+    private void checkIfMaxWordLengthIsShorterThanMinDefault() {
+        TreeSet<Integer> sortedWordLengths = new TreeSet<>(analyser.getWordsLengths());
+        int smallestNumber = sortedWordLengths.first();
+
+        if (maxWordLength < smallestNumber) {
+            wordLength = random.nextInt(maxWordLength) + 1;
+        } else {
+            chooseDefaultWordLength();
+        }
+    }
+
+    private void checkIfMinWordLengthIsHigherThanMaxDefault() {
+        TreeSet<Integer> sortedWordLengths = new TreeSet<>(analyser.getWordsLengths());
+        int highestNumber = sortedWordLengths.last();
+
+        if (minWordLength > highestNumber) {
+            wordLength = minWordLength;
+        } else {
+            chooseDefaultWordLength();
+        }
+    }
+
+    private void chooseFromManualInputs() {
+        wordLength = random.nextInt((maxWordLength - minWordLength) + 1) + minWordLength;
+    }
+
+    private void chooseDefaultWordLength() {
+        wordLength = analyser.getWordsLengths().get(random.nextInt(analyser.getWordsLengths().toArray().length));
     }
 
     void createAnalyser(ProgramParameters programParameters) {
