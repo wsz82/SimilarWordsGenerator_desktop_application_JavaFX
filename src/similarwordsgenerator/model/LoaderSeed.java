@@ -5,16 +5,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 class LoaderSeed extends ALoader {
-
     @Override
     Analyser load(String path) {
-
         Analyser analyser = new Analyser();
 
         try (
                 ObjectInputStream os = new ObjectInputStream(new FileInputStream(path))
                 ) {
-
             analyser = (Analyser) os.readObject();
 
         } catch (IOException e) {
@@ -22,7 +19,6 @@ class LoaderSeed extends ALoader {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         return analyser;
     }
 }

@@ -4,11 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 public class Controller {
-
-    public enum GenerateSource {
-        NEW_ANALYSER, CURRENT_ANALYSER
-    }
-
     private Generator generator = new Generator();
 
     public Set<String> generate(ProgramParameters programParameters, Controller.GenerateSource generateSource) {
@@ -41,5 +36,9 @@ public class Controller {
 
     public void setAnalyser(Analyser analyser) {
         generator.setAnalyser(analyser);
+    }
+
+    public enum GenerateSource {
+        NEW_ANALYSER, CURRENT_ANALYSER
     }
 }

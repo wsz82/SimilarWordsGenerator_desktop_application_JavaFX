@@ -8,7 +8,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SaverSeedTest {
-
     private String testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
     private List<String> input = Arrays.asList("John", "Nancy", "Stacy");
     private Analyser analyser = new Analyser();
@@ -19,7 +18,6 @@ class SaverSeedTest {
     void analyserAreTheSameBeforeAndAfterSavingSeed() {
         analyser.analyze(input);
         saverSeed.save(analyser, testDir + "seed.bin");
-
         Analyser loadedAnalyser = loaderSeed.load(testDir + "seed.bin");
         assertEquals(analyser.getHashOfInput(), loadedAnalyser.getHashOfInput());
     }

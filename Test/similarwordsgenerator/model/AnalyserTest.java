@@ -12,10 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AnalyserTest {
-
     @Nested
     class EmptyListInAnalyser {
-
         private List<String> input = new ArrayList<>(Arrays.asList(""));
         private Analyser analyser = new Analyser();
 
@@ -46,7 +44,6 @@ class AnalyserTest {
     }
     @Nested
     class AnalyserWithOneChar {
-
         private List<String> input = new ArrayList<>(Arrays.asList("A"));
         private Analyser analyser = new Analyser();
 
@@ -140,7 +137,6 @@ class AnalyserTest {
 
     @Nested
     class AnalyserWithMultipleWords {
-
         private List<String> input = Arrays.asList("John", "Nancy", "Stacy");
         private Analyser analyser = new Analyser();
 
@@ -197,7 +193,6 @@ class AnalyserTest {
 
     @Nested
     class CompressTests {
-
         private List<String> input = new ArrayList<>(Arrays.asList("John", "Nancy", "Stacy"));
         private Analyser analyser = new Analyser();
 

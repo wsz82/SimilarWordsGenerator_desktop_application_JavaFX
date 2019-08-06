@@ -6,7 +6,6 @@ import java.io.*;
 import java.util.List;
 
 class Memento implements Serializable {
-
     private ProgramParameters programParameters;
     private List<String> output;
 
@@ -14,16 +13,12 @@ class Memento implements Serializable {
     }
 
     Memento(ProgramParameters programParameters, List<String> output, File userHomeProgram, String mementoName) {
-
         this.programParameters = programParameters;
         this.output = output;
 
         try (
-
                 ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(userHomeProgram + File.separator + mementoName))
-
         ) {
-
             os.writeObject(this);
 
         } catch (IOException e) {
@@ -32,13 +27,11 @@ class Memento implements Serializable {
     }
 
     static Memento loadMemento (File userHomeProgram, String mementoName) {
-
         Memento memento = new Memento();
 
         try (
                 ObjectInputStream os = new ObjectInputStream(new FileInputStream(userHomeProgram + File.separator + mementoName))
         ) {
-
             memento = (Memento) os.readObject();
 
         } catch (IOException e) {
@@ -46,7 +39,6 @@ class Memento implements Serializable {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
         return memento;
     }
 

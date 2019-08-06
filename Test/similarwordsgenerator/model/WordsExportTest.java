@@ -12,7 +12,6 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class WordsExportTest {
-
     private String testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files//";
     private List<String> input = Arrays.asList("John", "Nancy", "Stacy");
     private Set<String> output;
@@ -32,22 +31,16 @@ class WordsExportTest {
         try (
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(testDir + "exported.txt"), StandardCharsets.UTF_8))
         ){
-
             String temp;
+
             br.mark(3);
-
             if (br.read() != '\ufeff') br.reset();
-
             while ( (temp = br.readLine()) != null ) {
-
                 if (!temp.equals("")) loaded.add(temp);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         assertEquals(output, loaded);
     }
-
 }

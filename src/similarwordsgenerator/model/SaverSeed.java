@@ -6,15 +6,10 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 class SaverSeed {
-
     void save(Analyser analyser, String path) {
-
         try (
-
                 ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(path))
-
                 ) {
-
             os.writeObject(analyser);
 
         } catch (FileNotFoundException e) {

@@ -37,23 +37,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class View {
-
     private Controller controller = new Controller();
 
-    private TextArea inputArea;
-    private TextArea outputArea;
-    private CheckBox sorted;
-    private CheckBox firstChar;
-    private CheckBox lastChar;
+    private TextArea inputArea = new TextArea();
+    private TextArea outputArea = new TextArea();
+    private CheckBox sorted = new CheckBox("Sort words");
+    private CheckBox firstChar = new CheckBox("First sign as in input");
+    private CheckBox lastChar = new CheckBox("Last sign as in input");
     private TextField numberOfWords;
     private TextField minWordLength;
     private TextField maxWordLength;
-    private TextField levelOfCompression;
-    private Label levelOfCompressionLabel;
-    private Button saveSeedButton;
-    private Button exportWordsButton;
-    private Button compressButton;
-    private ChoiceBox<String> loadChoiceBox;
+    private TextField levelOfCompression = new TextField();
+    private Label levelOfCompressionLabel = new Label("Level of compression:");
+    private Button loadButton = new Button("Load");
+    private Button generateButton = new Button("Generate");
+    private Button saveSeedButton = new Button("Save seed");
+    private Button exportWordsButton = new Button("Export words");
+    private Button compressButton = new Button("Compress");
+    private ChoiceBox<String> loadChoiceBox = new ChoiceBox<>();
 
     private String path = null;
     private List<String> output = new ArrayList<>();
@@ -61,50 +62,33 @@ class View {
     private boolean compressed;
 
     void init (Stage primaryStage, ProgramParameters initProgramParameters, File userHomeProgram, String mementoName, List<String> output) {
-
         Group root = new Group();
         Scene scene = new Scene(root, 650, 600);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Similar Words Generator");
 
-        inputArea = new TextArea();
         inputArea.setPromptText("Please choose a file with words in .txt or .csv format separated by newline. Eventually choose a seed (.bin created in this program)");
         inputArea.setPrefSize(150,500);
         Label inputManualLabel = new Label("Input");
-
-        outputArea = new TextArea();
         outputArea.setPrefSize(150,500);
         outputArea.setEditable(false);
         Label outputLabel = new Label("Output");
 
-        sorted = new CheckBox("Sort words");
+        Label optionsLabel = new Label("Options");
         sorted.setSelected(initProgramParameters.isSorted());
-        firstChar = new CheckBox("First sign as in input");
         firstChar.setSelected(initProgramParameters.isFirstCharAsInInput());
-        lastChar = new CheckBox("Last sign as in input");
         lastChar.setSelected(initProgramParameters.isLastCharAsInInput());
-
         numberOfWords = new TextField(Integer.toString(initProgramParameters.getNumberOfWords()));
         Label numberOfWordsLabel = new Label("Number of words:");
         minWordLength = getMinMaxTextFields(initProgramParameters.getMinWordLength());
         Label minWordLengthLabel = new Label("Min. word length:");
         maxWordLength = getMinMaxTextFields(initProgramParameters.getMaxWordLength());
         Label maxWordLengthLabel = new Label("Max. word length:");
-        levelOfCompression = new TextField();
-        levelOfCompressionLabel = new Label("Level of compression:");
-
-        Button loadButton = new Button("Load");
-        Button generateButton = new Button("Generate");
-        saveSeedButton = new Button("Save seed");
-        exportWordsButton = new Button("Export words");
-        compressButton = new Button("Compress");
 
         setPrimarySettings();
 
-        loadChoiceBox = new ChoiceBox<>();
         loadChoiceBox.setMinWidth(100);
         loadChoiceBox.setMaxWidth(100);
-
         FileChooser fcLoad = new FileChooser();
         fcLoad.setInitialDirectory(userHomeProgram);
         FileChooser fcSaveSeed = new FileChooser();
@@ -112,28 +96,21 @@ class View {
         FileChooser fcExportWords = new FileChooser();
         fcExportWords.setInitialDirectory(userHomeProgram);
 
-        Label optionsLabel = new Label("Options");
-
         numberOfWords.setMaxWidth(50);
         numberOfWords.setTextFormatter(new TextFormatter<>(this::filterForNumbersOfWords));
-
         minWordLength.setMaxWidth(50);
         minWordLength.setTextFormatter(new TextFormatter<>(change -> filterForMinWordLength(maxWordLength, change)));
-
         maxWordLength.setMaxWidth(50);
         maxWordLength.setTextFormatter(new TextFormatter<>(this::filterForMaxWordLength));
-
         levelOfCompression.setMaxWidth(50);
         levelOfCompression.setTextFormatter(new TextFormatter<>(this::filterForLevelOfCompression));
 
         fcSaveSeed.setTitle("Save seed to a file");
         fcSaveSeed.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Seed", "*.bin"));
-
         fcExportWords.setTitle("Save words to a file");
         fcExportWords.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"));
-
         fcLoad.setTitle("Load a text or seed file");
         fcLoad.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"),
@@ -191,7 +168,6 @@ class View {
 
         inputArea.setTextFormatter(new TextFormatter<>(change -> {
             if (inputArea.getText().endsWith("\n\n")) {
-
                 change.setText("");
             }
             return change;
@@ -205,19 +181,14 @@ class View {
 
         inputArea.textProperty().addListener((observableValue, oldVal, newVal) -> {
             if (!newVal.isEmpty()) {
-
                 if (path == null) {
                     provideInputManually(newVal);
                 }
-
                 setOptionsDisability(false);
-
             } else {
-
                 clearInputPathAnalyser();
                 setOptionsDisability(true);
             }
-
             checkIfToClearCompressedFlag(oldVal, newVal);
         });
 
@@ -230,19 +201,16 @@ class View {
         });
 
         sorted.selectedProperty().addListener((observableValue, oldVal, newVal) -> {
-
             Set<String> words;
             List<String> wordsFromOutput = Arrays.asList(outputArea.getText().split("\n"));
-            outputArea.setText("");
 
+            outputArea.setText("");
             if (newVal) {
                 words = new TreeSet<>(wordsFromOutput);
             } else {
                 words = new HashSet<>(wordsFromOutput);
             }
-
             this.output = new ArrayList<>(words);
-
             for (String word : words) {
                 outputArea.setText(outputArea.getText() + (word + "\n"));
             }
@@ -260,10 +228,8 @@ class View {
             File file = fcLoad.showOpenDialog(primaryStage);
 
             if (file != null) {
-
                 clearInputPathAnalyser();
                 path = file.getPath();
-
                 inputArea.setText(file.getName());
                 inputArea.setEditable(false);
                 loadChoiceBox.setValue(null);
@@ -278,9 +244,7 @@ class View {
             } catch (NullPointerException en) {
                 showErrorInputMessage();
             }
-
             clearOutputArea();
-
             for (String word : this.output) {
                 outputArea.setText(outputArea.getText() + (word + "\n"));
             }
@@ -303,7 +267,6 @@ class View {
 
         compressButton.setOnAction(actionEvent -> {
             ProgramParameters programParameters = setParameters(controller);
-
             int levelOfCompressionValue = 0;
 
             try {
@@ -311,9 +274,7 @@ class View {
             } catch (NumberFormatException en) {
                 levelOfCompression.requestFocus();
             }
-
             if (levelOfCompressionValue > 0) {
-
                 controller.compress(levelOfCompressionValue, programParameters);
                 compressed = true;
                 compressButton.setDisable(true);
@@ -322,32 +283,26 @@ class View {
 
         loadChoiceBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-
                 clearInputPathAnalyser();
                 path = userHomeProgram + File.separator + newValue;
-
                 inputArea.setText(newValue);
                 inputArea.setEditable(false);
             }
         });
 
         loadChoiceBox.setOnMouseEntered(mouseEvent -> {
-
             List<String> seedFiles = new ArrayList<>();
 
             try (
                     Stream<Path> walk = Files.walk(Paths.get(userHomeProgram.getPath()))
             ) {
-
                 seedFiles = walk
                         .map(e -> e.getFileName().toString())
                         .filter(e -> e.endsWith(".bin"))
                         .collect(Collectors.toList());
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             ObservableList<String> seedFilesOb = FXCollections.observableArrayList(seedFiles);
 
             if (loadChoiceBox.getItems().isEmpty()) {
@@ -376,15 +331,12 @@ class View {
     }
 
     private void clearPathFromInputArea(MouseEvent mouseEvent) {
-
         boolean pathIsWrittenToInputArea = inputArea.getText().equals(new File(path).getName());
         boolean primaryMouseButtonIsClicked = mouseEvent.getButton().equals(MouseButton.PRIMARY);
         boolean buttonIsClickedTwice = mouseEvent.getClickCount() == 2;
 
         if (pathIsWrittenToInputArea && primaryMouseButtonIsClicked && buttonIsClickedTwice) {
-
             clearInputPathAnalyser();
-
             inputArea.setText("");
             inputArea.setEditable(true);
             loadChoiceBox.setValue(null);
@@ -430,23 +382,17 @@ class View {
 
     private void checkMemento(ProgramParameters initProgramParameters, List<String> output, Controller controller) {
         if (initProgramParameters.getLevelOfCompression() != 0) {
-
             levelOfCompression.setText(Integer.toString(initProgramParameters.getLevelOfCompression()));
         }
-
         if (initProgramParameters.getAnalyser() != null) {
-
             controller.setAnalyser(initProgramParameters.getAnalyser());
             compressed = initProgramParameters.isCompressed();
         }
-
         if (initProgramParameters.getInput() != null && !initProgramParameters.getInput().isEmpty()) {
-
             for (String word : initProgramParameters.getInput()) {
                 inputArea.setText(inputArea.getText() + (word + "\n"));
             }
             input = initProgramParameters.getInput();
-
             saveSeedButton.setDisable(false);
             levelOfCompression.setDisable(false);
             levelOfCompressionLabel.setDisable(false);
@@ -457,20 +403,16 @@ class View {
                 outputArea.setText(outputArea.getText() + (word + "\n"));
                 this.output.add(word);
             }
-
             exportWordsButton.setDisable(false);
         }
 
         if (initProgramParameters.getPath() != null) {
-
             boolean fileExists = new File(initProgramParameters.getPath()).exists();
 
             if (fileExists) {
-
                 inputArea.setText(new File(initProgramParameters.getPath()).getName());
                 inputArea.setEditable(false);
                 path = initProgramParameters.getPath();
-
                 setOptionsDisability(false);
             }
         }
@@ -487,9 +429,7 @@ class View {
         errorStage.setTitle("Input error");
 
         VBox errorPane = new VBox();
-
         Scene errorScene = new Scene(errorPane, 300, 100);
-
         Text errorText = new Text("Wrong input!");
 
         errorPane.getChildren().add(errorText);
@@ -501,7 +441,6 @@ class View {
     }
 
     private void setOptionsDisability(boolean boo) {
-
         saveSeedButton.setDisable(boo);
         levelOfCompression.setDisable(boo);
         levelOfCompressionLabel.setDisable(boo);
@@ -509,7 +448,6 @@ class View {
     }
 
     private ProgramParameters setParameters(Controller controller) {
-
         ProgramParameters.Builder parametersBuilder = new ProgramParameters.Builder();
 
         parametersBuilder.setAnalyser(controller.getAnalyser());

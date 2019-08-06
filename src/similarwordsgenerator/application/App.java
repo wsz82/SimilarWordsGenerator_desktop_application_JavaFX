@@ -9,18 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class App extends Application {
+    private File userHomeProgram;
+    private ProgramParameters parameters;
+    private List<String> output = new ArrayList<>();
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    private File userHomeProgram;
-    private ProgramParameters parameters;
-    private List<String> output = new ArrayList<>();
-
     @Override
     public void start(Stage primaryStage) {
-
         View view = new View();
         String mementoName = "memento";
 
@@ -33,11 +31,9 @@ public class App extends Application {
         boolean mementoExists = new File(userHomeProgram + File.separator + mementoName).exists();
 
         if (mementoExists) {
-
             Memento memento = Memento.loadMemento(userHomeProgram, mementoName);
             parameters = memento.getProgramParameters();
             output = memento.getOutput();
-
         } else {
             parameters = new ProgramParameters.Builder().build();
         }

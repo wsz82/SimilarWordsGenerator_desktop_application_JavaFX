@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 public final class ProgramParameters implements Serializable {
-
     private final Analyser analyser;
     private final List<String> input;
     private final String path;
@@ -77,7 +76,6 @@ public final class ProgramParameters implements Serializable {
     }
 
     public final static class Builder {
-
         private Analyser analyser = null;
         private List<String> input = Collections.emptyList();
         private String path = null;

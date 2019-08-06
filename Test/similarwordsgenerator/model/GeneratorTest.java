@@ -12,7 +12,6 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GeneratorTest {
-
     private ProgramParameters.Builder parametersBuilder;
     private ProgramParameters parameters;
     private Generator generator;
@@ -53,7 +52,6 @@ class GeneratorTest {
 
     @Nested
     class InputTests {
-
         List<String> input = Arrays.asList("John", "Nancy", "Stacy");
         Set<String> output;
 
@@ -73,6 +71,7 @@ class GeneratorTest {
         void outputIsSorted() {
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
             String prevWord = "";
+
             for (String word : output) {
                 if (word.compareTo(prevWord) < 0) {
                     fail();
@@ -89,6 +88,7 @@ class GeneratorTest {
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
             String prevWord = "";
             boolean isNotSorted = false;
+
             for (String word : output) {
                 if (isNotSorted) {
                     break;
@@ -115,6 +115,7 @@ class GeneratorTest {
             parameters = parametersBuilder.build();
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
             boolean ifExistsWordWithFirstCharNotExistingInListOfFirstChars = false;
+
             for (String word : output) {
                 if (!generator.getAnalyser().getFirstChars().contains(word.charAt(0))) {
                     ifExistsWordWithFirstCharNotExistingInListOfFirstChars = true;
@@ -138,6 +139,7 @@ class GeneratorTest {
             parameters = parametersBuilder.build();
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
             boolean ifExistsWordWithLastCharNotExistingInListOfLastChars = false;
+
             for (String word : output) {
                 if (!generator.getAnalyser().getLastChars().contains(word.charAt(0))) {
                     ifExistsWordWithLastCharNotExistingInListOfLastChars = true;
@@ -152,6 +154,7 @@ class GeneratorTest {
             parametersBuilder.setMinWordLength(5);
             parameters = parametersBuilder.build();
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
+
             for (String word : output) {
                 if (word.length() < parameters.getMinWordLength()) {
                     fail();
@@ -164,6 +167,7 @@ class GeneratorTest {
             parametersBuilder.setMaxWordLength(4);
             parameters = parametersBuilder.build();
             output = generator.generate(parameters, Controller.GenerateSource.NEW_ANALYSER);
+
             for (String word : output) {
                 if (word.length() > parameters.getMaxWordLength()) {
                     fail();
