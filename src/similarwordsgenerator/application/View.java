@@ -98,14 +98,14 @@ class View {
 
         fcSaveSeed.setTitle("Save seed to a file");
         fcSaveSeed.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Seed", "*.bin"));
+                new FileChooser.ExtensionFilter("Seed (*.bin)", "*.bin"));
         fcExportWords.setTitle("Save words to a file");
         fcExportWords.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"));
+                new FileChooser.ExtensionFilter("Text (*.txt;*.csv)", "*.txt", "*.csv"));
         fcLoad.setTitle("Load a text or seed file");
         fcLoad.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Text", "*.txt", "*.csv"),
-                new FileChooser.ExtensionFilter("Seed", "*.bin"));
+                new FileChooser.ExtensionFilter("Text (*.txt;*.csv)", "*.txt", "*.csv"),
+                new FileChooser.ExtensionFilter("Seed (*.bin)", "*.bin"));
 
         checkMemento(initProgramParameters, output, controller);
 
