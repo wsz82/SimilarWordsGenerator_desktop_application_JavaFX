@@ -23,5 +23,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="io.github.wsz82:similar-words-generator:1.0" level="project" />
   </component>
 </module>

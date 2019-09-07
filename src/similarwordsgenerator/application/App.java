@@ -1,8 +1,8 @@
 package similarwordsgenerator.application;
 
+import io.github.wsz82.ProgramParameters;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import similarwordsgenerator.model.ProgramParameters;
 
 import java.io.File;
 import java.net.URISyntaxException;

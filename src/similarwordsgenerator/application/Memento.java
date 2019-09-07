@@ -1,6 +1,6 @@
 package similarwordsgenerator.application;
 
-import similarwordsgenerator.model.ProgramParameters;
+import io.github.wsz82.ProgramParameters;
 
 import java.io.*;
 import java.util.List;

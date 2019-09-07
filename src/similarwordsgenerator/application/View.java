@@ -1,5 +1,7 @@
 package similarwordsgenerator.application;
 
+import io.github.wsz82.Controller;
+import io.github.wsz82.ProgramParameters;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -15,8 +17,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import similarwordsgenerator.model.Controller;
-import similarwordsgenerator.model.ProgramParameters;
 
 import java.io.File;
 import java.io.IOException;
