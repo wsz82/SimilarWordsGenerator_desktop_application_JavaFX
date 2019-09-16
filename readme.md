@@ -4,8 +4,7 @@ It is a program to generate words similar to given input.
 
 ## Description
 
-A project for desktop application for generating words. It bases on library added to Central Repository. There are two core classes: Analyser and Generator. First is responsible for analysing an input, second makes new words.
-Builder design pattern is used for creating parameters for Generator. Memento pattern is to restore settings after closing the application.
+A project for desktop application for generating words. It bases on library io.github.wsz82:similar-words-generator:1.2 added to Central Repository. Memento pattern is to restore settings after closing the application.
 
 ## Installation
 
