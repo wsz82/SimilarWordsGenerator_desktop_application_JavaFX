@@ -14,7 +14,7 @@ For tests add in VM configurations:<br/>
 
 ## Usage
 
-A window application is made to operate the model. Class Controller is responsible for communication between model and application.
+A window application is made to operate the model. Class Controller is responsible for communication between model and application. The program is released at https://www.nexusmods.com/morrowind/mods/47050
 
 ![sample](sample.jpg)
 
