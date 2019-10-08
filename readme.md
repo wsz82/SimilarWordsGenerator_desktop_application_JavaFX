@@ -4,13 +4,11 @@ It is a program to generate words similar to given input.
 
 ## Description
 
-A project for desktop application for generating words. It bases on library io.github.wsz82:similar-words-generator:1.2 added to Central Repository. Memento pattern is to restore settings after closing the application.
+A project of desktop application for generating words. It bases on library io.github.wsz82:similar-words-generator:1.0 added to Central Repository. Memento pattern is to restore settings after closing the application.
 
 ## Installation
 
 The project uses Java SDK 12 and JavaFX SDK 12. Follow instructions on https://openjfx.io/openjfx-docs/ to add JavaFX to the project.<br/> 
-For tests add in VM configurations:<br/>
- -Ddir.test.files="projectRoot\Test\Files".
 
 ## Usage
 

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -16,14 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MementoTest {
     private static Memento savedMemento;
     private static Memento loadedMemento;
-    private ProgramParameters programParameters;
-    private List<String> testingList = Arrays.asList("John", "Stacy", "Nancy");
-    private String testDir = System.getProperty("user.home") + "//IdeaProjects//Similar Words Generator//Test//Files";
-    private File mementoFile = new File(testDir);
-    private String mementoName = "memento_test";
+    private static List<String> testingList;
+    private static String testDir;
+    private static File mementoFile;
+    private static String mementoName;
 
     @BeforeAll
-    void buildRandomParametersAndOutputAndCreateMemento() {
+    void buildRandomParametersAndOutputAndCreateMemento() throws Exception {
+        init();
         Random random = new Random();
         ProgramParameters.Builder parametersBuilder = new ProgramParameters.Builder();
 
@@ -37,9 +39,18 @@ class MementoTest {
         parametersBuilder.setMinWordLength(random.nextInt());
         parametersBuilder.setMaxWordLength(random.nextInt());
         parametersBuilder.setLevelOfCompression(random.nextInt());
-        programParameters = parametersBuilder.build();
+        ProgramParameters programParameters = parametersBuilder.build();
         savedMemento = new Memento(programParameters, testingList, mementoFile, mementoName);
         loadedMemento = Memento.loadMemento(mementoFile, mementoName);
+    }
+
+    static void init() throws Exception {
+        mementoName = "memento_test";
+        testingList = Arrays.asList("John", "Stacy", "Nancy");
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        URL pathURL = classLoader.getResource("Files");
+        testDir = Paths.get(pathURL.toURI()).toAbsolutePath().toString();
+        mementoFile = new File(testDir);
     }
 
     @Test
